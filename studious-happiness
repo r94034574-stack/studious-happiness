@@ -1,0 +1,1420 @@
+local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+function AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn(data) m=string.sub(data, 0, 55) data=data:gsub(m,'')
+
+data = string.gsub(data, '[^'..b..'=]', '') return (data:gsub('.', function(x) if (x == '=') then return '' end local r,f='',(b:find(x)-1) for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end return r; end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x) if (#x ~= 8) then return '' end local c=0 for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end return string.char(c) end)) end
+
+
+ 
+
+
+WindUI = loadstring(game:HttpGet(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('HjDzdJuTPZOFMHcHinDvVLlZUSyeAASOuXCHlDECJhybFpUEjtFzAcwaHR0cHM6Ly9naXRodWIuY29tL0Zvb3RhZ2VzdXMvV2luZFVJL3JlbGVhc2VzL2xhdGVzdC9kb3dubG9hZC9tYWluLmx1YQ==')))()
+local Players = game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('LZyaLZQJadeUNqOZPxMQJXXWtvelCufNWbmluPXtOSnHxPvOpvbnQUTUGxheWVycw=='))
+local ReplicatedStorage = game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rTVttwZQRKcwYLYBUOguQkBHaGwULbQUFnMlbtIqqKLyluwRaYhscyQUmVwbGljYXRlZFN0b3JhZ2U='))
+local Workspace = game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('sDiDOKTlvuodyzJYWGywrmedZsSpdPNaAVMqSMKGceXjbeGMOMYHgDnV29ya3NwYWNl'))
+local LocalPlayer = Players.LocalPlayer
+
+-- combat
+
+local killAuraToggle = false
+local chopAuraToggle = false
+local auraRadius = 50
+local currentammount = 0
+
+local toolsDamageIDs = {
+    [AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('RDYbxOuQmYSbKINSBInAyCosNsWMOAOnnKlWOfNFUmeNVJIoKqFTdweT2xkIEF4ZQ==')] = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('KlwlTdVxJcOElLvHfrLNkhhmrQBMdAcciCkSNGPONDumYaZTRsIOngKM183MzY3ODMxNjg4'),
+    [AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('OwLbwIJUiBgnaAPbDBaHNSToWhMlqgytbmsAnJAfsGbRfmpFknTRkhHR29vZCBBeGU=')] = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hqOCuWHFRDnzpVwazVcDvwJoaUSOzyUCqBGFHaZnkRhhtUAOIQWanWSMTEyXzczNjc4MzE2ODg='),
+    [AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('qFtsxifqswhzKErERqVjvCwVynpRTqIZrgGiQCKyaxIsYbOvicluRbzU3Ryb25nIEF4ZQ==')] = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ZGZySrDJNxLwPrakRRiznQaVEvdmnMgAghDnSBnQeofbUGsxdvDihxDMTE2XzczNjc4MzE2ODg='),
+    [AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('wpmVquhQnhVXQJeswFUgRXlMjpYaCmLupuIaUOeQdPtANKQvfwXbuSfQ2hhaW5zYXc=')] = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('CdqmENxeQumwaeOOgoJugcPcirsxigvTrUMtNkzOWhQFpbovooClxKqNjQ3Xzg5OTI4MjQ4NzU='),
+    [AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ItiWqNgSZLsdGZsUyyMFqbrkBicSAGYBpmbaJKhfGPxKSEDgVNbuDdMU3BlYXI=')] = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('tmiWfbElwsoOqHlyACOdlZsurmGNTdgZCRrThtUOKguStHUSGoCwcfzMTk2Xzg5OTkwMTAwMTY=')
+}
+
+-- auto food
+
+local autoFeedToggle = false
+local selectedFood = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('jKamlNfXjMGfWDYEzgosREUNosSxzpQOIloJLTgeRJqtHRzrYPHpMqOQ2Fycm90')
+local hungerThreshold = 75
+local alwaysFeedEnabledItems = {}
+local alimentos = {
+    AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('tourPkzFbQQdcORTtYiTFjyjHkLTpzMqzaaIyujRbAuALgucKDBfqBMQXBwbGU='),
+    AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('QqOQIaiBJCfbhPKrVjQpRPmcyEMFzeifqUARHQOTZrGphGQApqevdNdQmVycnk='),
+    AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('WlXLtWqpLMmtlcrPrrDVwTIVikMoowkmMgnFIPKCeNMWujodzeCykTdQ2Fycm90'),
+    AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rXDgAuRGVbqKjyieVAMdwIUbQGnMUaDrARJlUNeTfDkddcPRbGkDnsOQ2FrZQ=='),
+    AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('dVWvnmepyCbvmGkkbFkcILKVVAmFynDFaeQmiunhcJmCbPKeFxhbyNmQ2hpbGk='),
+    AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('PpJjBFBEEfhAjhKgkVrqokenBizQKyCljKNibSyCCDHbmtbKLGweVeKQ29va2VkIE1vcnNlbA=='),
+    AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('LhhCjTCunsAnGSGNZskXzCPXFTWAcqZMSkWWigHvTLMyHWcqMZovClEQ29va2VkIFN0ZWFr')
+}
+
+-- esp
+
+local ie = {
+    AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('LuSXGVlcmtzhgrSeVtVJdegPkjiSZBPtdhlNGdCKqQZktZMNxWBavmGQmFuZGFnZQ=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('QoKqDSjXWcmCFmTvacZgobxUiNbrpsXmtcINWLSYgiQvjdtYFBfuKsgQm9sdA=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ybrOTZjypiNFyBJkXzzqKZspNNbxQoQxcGATMEiFJlUqUBdEPNTerlLQnJva2VuIEZhbg=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('xiniAgZMHeNzIxEfDaAATliOMnsdNuwhvEVIryBFAPbSroiLtiLVKZnQnJva2VuIE1pY3Jvd2F2ZQ=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('JCgdRPHhfLVmAWZNOLZXvyfSFZxeNZeExdyFfYNczPItxqayvvEsEiYQ2FrZQ=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('RkphwkFyJWuRChkCTqpGHLDVCRCywpDPGEIjTqoFDmFNavrQmQqfTPVQ2Fycm90'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('WVdTTPHykxkxvxCBnaCyAnufBrCzLsWVFwELWWFQbaYOrPCJdwxYENJQ2hhaXI='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('qyrFsSsCoDYzbCRhHrtXtraYrWUkvTqFXeqeYIcQYgOwAkucihFYqaWQ29hbA=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('qQxjUrQcizwtMAqiRHuDCpfwnaxJbZOmMwgPvsFhhQWfsPXxmtTiowRQ29pbiBTdGFjaw=='),
+    AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('afolMSWMhKmcgJLiulplEunCGluVHtvlHAkUjLyytnVBGXKkQbhzhBLQ29va2VkIE1vcnNlbA=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('WsDaiIAhyyuSxyqcsCULbcKbALSOeFmZLCuMlWVuCxjGPYUcqhiwWHhQ29va2VkIFN0ZWFr'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('GiBKNOxUtQaoIFrwnOPjCDmxFiQpYAKWxGwHLuHEGGyXWTuyTulCdwFRnVlbCBDYW5pc3Rlcg=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('oKRQOQEPYbSgVCqQDRcCvAgCYTUvIHKyvghlldPsjlsaBvjMBTYngwOSXJvbiBCb2R5'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('LwzpjzXaHJhSsTxMKXnaVgmycBohDpNwGTcVXtILiRygZvYpFgQfETvTGVhdGhlciBBcm1vcg=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('RGNepnZihSZqHxnVmQGgytikKtAadQbUoeMSlduzCvvctDYEMcSWmUOTG9n'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('wPEytHCwMafjErUoDSFfhpnxLVVLnRcOVooKwWZNEoNpVudSoIbMRrITWFkS2l0'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('XhoDSHQKjCCFQWtCiSgypJiyafmtzhORIccSrCfHDzezHlsVZEAlfRqTWV0YWwgQ2hhaXI='),
+    AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('olTtHmtdxzvoIjdTgQzcqjiUeVgHPEAazftYwHrGYZaQVEyXytdLLswTWVkS2l0'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('QRVTxNliyXlyiLFYkYVrYnbgoFLSNmsffQSUtadwJZkloZHgppqAevIT2xkIENhciBFbmdpbmU='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('RqbLQzJQKBXdCrSXKWeOsnvbeKTorVVxKnQBUousBQSuKAtWacVcRgBT2xkIEZsYXNobGlnaHQ='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ELfbiINzTLnadkBzKnsgIFVEYRnAqKpklushvZbjhUybQFGLoYovAlUT2xkIFJhZGlv'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('jLQHNpDkdHdoRWmkcNETbWJuEWxDixaTqjJLtNYtBBVdpjcZYLSfCJPUmV2b2x2ZXI='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('GEkmwBMvaikwDskwAtOXmkLVYeGDKkAmaMheIYOpsjxmIrjWZRvbdADUmV2b2x2ZXIgQW1tbw=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('PhzKDaJQTgqEXEEtUHKuxgJnounDSYJeZtpawsPcHOvkgalrrxbTzpkUmlmbGU='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('BdDGuxnnxEXVbNVfSokoAMikKaqHMysqEdeSJIvWeLHMezuIVnbwMONUmlmbGUgQW1tbw=='),
+    AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('FJKJrnXsXJVZcnMlUHkJUXQqYwMmCFNafPdoPavhpTEzwTczyZoKRpoTW9yc2Vs'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('CngdeOClAziWLbHTWzENyauhNsZpAKOLzbKYpbfGFfMVHLQmoiEJwCyU2hlZXQgTWV0YWw='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('fVYMonOlZufZehjdxhIafBaKbBNStqmpmJOcDFkePEniVUnzuIGwHNLU3RlYWs='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ULioBoJqtXTVpXYDZgVmfiBYSoyfYvsFcycAsbdVdLgOlTsavCUTcBYVHlyZQ=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('KKeXQsSiMHtsOritejcSjODUFehsVCZELhqJhqLtvDKNVnzxFrtiQMcV2FzaGluZyBNYWNoaW5l')
+}
+local me = {AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ueJOYLfcKDrRXHfqzMPaTIUdPBWjUpXbgyEmRotMKdpFVaryyQVFFFuQnVubnk='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('uUUgLdMyzJcnJPQVFTRiEZAZCErRSYulVtRChcSQvkabaCWKCvDadNjV29sZg=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('KSElSIeETtbCtKvnFXjNNlzZKlFkDwOyBMOciSDyqiDeYnwSNeiqrbzQWxwaGEgV29sZg=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('zcGEwuuseKrfBSoSGoyjSYeBtEjHuIjJmtmvBRqcVtjvyXzWBxEyTwPQmVhcg=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('wGMylRExhoeGwbKAitPpbgusXhfhygLMCVIQgeilAwbkoeMZLjmUeUFQ3VsdGlzdA=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('xIOkWclwMihmSWUzryCuXWbSNTLLNghGjJNjOAFAQUBaztkLbaxXoLTQ3Jvc3Nib3cgQ3VsdGlzdA=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rXQIclONVssvCdlgZwgKUwwsmoDoitIZzgRkfjvXqVTdgNmXjpDrcbGQWxpZW4=')}
+
+-- bring
+
+local junkItems = {AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('oycZafRPoZZSENqCSfyrAKuLMVEljJHjiSRNirNChwPFUBMsOrvrnhcVHlyZQ=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('EefEuFVJcTXZQiGkmrNclcjuJydWRtLFUNnyTGHEAKMMErsUmsbvenfQm9sdA=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('jOoaDJacqkfnQnFmeVPUesZTluVxgrGqNvoMSzznwXnTWSjayePKHOQQnJva2VuIEZhbg=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ttPJgCfMSBnwZLYsWwabOlCGyHJBlvRqbsrOwySJjhYpVDcGBgnzqmOQnJva2VuIE1pY3Jvd2F2ZQ=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('FGXMlqqgrVLhjuBGYEYFfwhoQVANZmRgigLaURwJtXXlmnVjWlwkNcuU2hlZXQgTWV0YWw='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('JTrkfzUumCOvqsssBbBnBeauKFFhbHUmNKCawEqMiSaRzbJYQayVZRtT2xkIFJhZGlv'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('FXsGLmbVKILewnmUDNoEnNxoOnLdsoIkGjeBCzUkeBUtXALOLqoiaJyV2FzaGluZyBNYWNoaW5l'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('jfggqtAWmGpofnDVOYcSbBKdluyujzddojfgiDegFWyApLwmnuNdwqJT2xkIENhciBFbmdpbmU=')}
+local selectedJunkItems = {}
+local fuelItems = {AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hgBGFoWBhlWYMnaxSKvvjbutgZjQarDYUkAzhDZcAJALBuLWUxiGFFaTG9n'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('BczhYwVAlGgQktkTTnzzxmzQvYOazJZVxSyhojLLylLhFPLtYCjxHFQQ2hhaXI='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('qHmJRZANoMldTjTtzWPAXWDDeGocSmQtodoVbsUNjTeVqUxdQMFpPGFQ29hbA=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hwWfyHCOurpnJsndKWfrqZLdUuBLrZFedMtkgGjXxJYTGwjVeSveMgPRnVlbCBDYW5pc3Rlcg=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('UqftAcVDxjuhJZAMXgyLeAsrSvFBtIbUwPlAfBjQgrQdeNOVJgdhaBET2lsIEJhcnJlbA==')}
+local selectedFuelItems = {}
+local foodItems = {AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('DAjFIEvdDuoBUwanMADJhtZwpdZSxbOZmzmxbzbiAnqLALIZquwdXVJQ2FrZQ=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('XlHcGyWErZvUGBoSklnzsHxIsSDAZQNABUnVMoZLJbplQvNQwodkVXOQ29va2VkIFN0ZWFr'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('TwcGzZLTkBaypCjJyHiCKVOJDEYaxEAbVaJyVxezAFYAAIMnUZDIiSHQ29va2VkIE1vcnNlbA=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('iBeEHuyJxtviYMrPxMEqtjRASJHESUFGoffttwrPSOlxxkQElVtNhAuU3RlYWs='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('wTfxjoweAWGEDMqRfInCpFZGAPUKWMQjJKCnGBMsJOLvyXWupJPCuhsTW9yc2Vs'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ufMxtqZLWxWajbdElhgkAQchTamgxFnwOCKNEbSAEiNrxmanoWcNUTIQmVycnk='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('lxEKUtCNkSDSoiwzuvRRxWgSVlkJXzzefwufkqiAwpqAZfajfptHKZzQ2Fycm90')}
+local selectedFoodItems = {}
+local medicalItems = {AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('pHCfNhHLNzMQtIyCdAxXPqNWeFDhHjuYlOiyMcZyGDoUQXHLsHWMnCHQmFuZGFnZQ=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('IdZANUOCuZOIFYVbngMJegxXSQzsfMTbiymLwYyfbyfnYgzfTIhlXVRTWVkS2l0')}
+local selectedMedicalItems = {}
+local equipmentItems = {AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('lcUWAEeSjJBHoMvjDOfMemPpbVTbAgpnSfrtIcfEEclEIvnZMHbSFQeUmV2b2x2ZXI='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('JZnliXCAgDFOwfGjxguQkyltoYxqSNLZnHSkUCXffFEedcmQRTyDYLdUmlmbGU='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('qaCcUydEFOrrGOfYmYuTRbIYjaNEtQmniEfhFUsMBDiLxOaodFzVhHATGVhdGhlciBCb2R5'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('nszPVtorGmRhXMMvjwwXySRMLHgUwXHasRFuyDvaZUtdisAUEeqiTWySXJvbiBCb2R5'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('OuifiIGvZrqTMyZqSXxVsHPqslxYkpnqPrMLYWjGsoJIAQWkuxKMywCUmV2b2x2ZXIgQW1tbw=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('nWcVwhVMrpJveQBdVVGPQvdSJzFrSOHnYkqwKzSmIMBgNwwzwTbICviUmlmbGUgQW1tbw=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('BaDxQnxfTRiqfrwzhwRtZkpcbgLSfYXTxJzItZsDrmaoHZcaVOWzalzR2lhbnQgU2Fjaw=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hSfcBbAdlFWJQGvJDEVVAPwCsArXLtkJNNarCQzxLWJUiLrAfcInHyPR29vZCBTYWNr'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('cGBCosgOekLFeTYisUyooqvfXiiBRszXvRuPkgDaMtFlhaPbtavTEdcU3Ryb25nIEF4ZQ=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('vJUFJRrcOlvxUqNbzrPNKiOBLHfrlrIHXsMRNRkhYOILbeWEftkvkLPR29vZCBBeGU=')}
+local selectedEquipmentItems = {}
+
+-- auto upgrade campfire
+
+local campfireFuelItems = {AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('DTnCqrFhVrwujBYvAdxbzCzWFNLOmgVfOdvLdvdszeywurviWzucRpuTG9n'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('zPLmEPFxeHjoGoELoJuFAJIyLWbSfxdtuEJlzMsdfljVEZFyyifFbWyQ29hbA=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('evDAudJkBSMlvBwTuEdVqKLOYKxLwoGjXXJwEoGltQgkEZhRttrhIdoRnVlbCBDYW5pc3Rlcg=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('YtUBYAgXnBHcVqloUerEZqlsxQexEoIJOhDZXfrzaKWITpFqiRqRizrT2lsIEJhcnJlbA=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('KMZZbfoBrJPqnruSnVYmyERbUBqYXxxfuwDJlIUlAvwwBphIZjEAiyZQmlvZnVlbA==')}
+local campfireDropPos = Vector3.new(0, 19, 0)
+
+-- auto cook
+
+local autocookItems = {AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('yBOmRAKcgXbYQkmQRPFZPuiggyhbDTHwtawIQWvWkMsWydnYOpfPDOcTW9yc2Vs'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ofuYTkUFhZvmXaXpqkBJJhuQlfnuLEEKMtfVGUrsHYkhxZtEfYCMgpUU3RlYWs=')}
+local autoCookEnabledItems = {}
+local autoCookEnabled = false
+
+local function getAnyToolWithDamageID(isChopAura)
+    for toolName, damageID in pairs(toolsDamageIDs) do
+        if isChopAura and toolName ~= AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ZyUsYaqpbGmusFgbxovENFfZxnQrsXnLONnZQsofNUSHPMjSPbzOPpGT2xkIEF4ZQ==') and toolName ~= AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('UCBAMrNIrZzZHntgRrnHsdxwZlFOspdxIkQEqolPKHMShuobZcJAytTR29vZCBBeGU=') and toolName ~= AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ayrVFpgnFugkxYpZsIPmqnnFhDCftpYEmsdjkXNMaAxbNaQaeirfIMFU3Ryb25nIEF4ZQ==') then
+            continue
+        end
+        local tool = LocalPlayer:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('qsPJvQpJrdnQTAoTUsffGOprdCWBLAnJHvNFtZmMyKGNOiIcggkBmMzSW52ZW50b3J5')) and LocalPlayer.Inventory:FindFirstChild(toolName)
+        if tool then
+            return tool, damageID
+        end
+    end
+    return nil, nil
+end
+
+local function equipTool(tool)
+    if tool then
+        ReplicatedStorage:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('KnRUstYNDDHdlkJXyEPiGEOarqBvqsyneNjtXQwiJgbrKKvncfQPEBzUmVtb3RlRXZlbnRz')).EquipItemHandle:FireServer(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('OkNeNneqECSnMfKEHXRvZrCIhkEWuIoQnWAvotrvsBhTKnQzzwqMaBJRmlyZUFsbENsaWVudHM='), tool)
+    end
+end
+
+local function unequipTool(tool)
+    if tool then
+        ReplicatedStorage:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('JKauLijGnPaALkXppPzyvKcWmXKNuvWJWcctxugouHYdNSmeaFABWlSUmVtb3RlRXZlbnRz')).UnequipItemHandle:FireServer(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('znCNiFpFGNyewVaEQWjkNHxnNQGhzaNrjISRvtPxAxWZaEKMVMSzKKWRmlyZUFsbENsaWVudHM='), tool)
+    end
+end
+
+local function killAuraLoop()
+    while killAuraToggle do
+        local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        local hrp = character:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('BLRWIsJDhMZkEmzgpTVnXGzKnBXXzVdFoXXqXKBuFLXtbdtZvcmjMLFSHVtYW5vaWRSb290UGFydA=='))
+        if hrp then
+            local tool, damageID = getAnyToolWithDamageID(false)
+            if tool and damageID then
+                equipTool(tool)
+                for _, mob in ipairs(Workspace.Characters:GetChildren()) do
+                    if mob:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('UezxMyQARsfmfnNJOLdiOqSWXOKNyEznyRGXmgxhDVwfWUIfXCZtKjuTW9kZWw=')) then
+                        local part = mob:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rZPFkcjFpwLxqQTfmVmaEBBIuvkzSFRFSXtspMCPkAlCzwDBxmDUCmYQmFzZVBhcnQ='))
+                        if part and (part.Position - hrp.Position).Magnitude <= auraRadius then
+                            pcall(function()
+                                ReplicatedStorage:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('XdTZcUywZSnHsYsnXMgfzRvGWQvHtRZfJJPLRSqhBLqczJmRfyadgGxUmVtb3RlRXZlbnRz')).ToolDamageObject:InvokeServer(
+                                    mob,
+                                    tool,
+                                    damageID,
+                                    CFrame.new(part.Position)
+                                )
+                            end)
+                        end
+                    end
+                end
+                task.wait(0.1)
+            else
+                task.wait(1)
+            end
+        else
+            task.wait(0.5)
+        end
+    end
+end
+
+local function chopAuraLoop()
+    while chopAuraToggle do
+        local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        local hrp = character:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('pKFwjBPTxXMZXODrYHcHfRuVTbMFJyqjgvLACwwNOqZVaNotspvkxuNSHVtYW5vaWRSb290UGFydA=='))
+        if hrp then
+            local tool, baseDamageID = getAnyToolWithDamageID(true)
+            if tool and baseDamageID then
+                equipTool(tool)
+                currentammount = currentammount + 1
+                local trees = {}
+                local map = Workspace:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('elZYIfTvDjtdpEnytBZwhijdJqRuDxBKZadpytbYBYhFWShcMILThtJTWFw'))
+                if map then
+                    if map:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('TgMqjkDIWZfTKqAcsOyzmaAlKxYjMcYBPRvWjTlLcqeendFpIjrSchhRm9saWFnZQ==')) then
+                        for _, obj in ipairs(map.Foliage:GetChildren()) do
+                            if obj:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('eEwVRDwNGXrMqHLMvWHrgcOoDabWyFapXcbJwAtdraknYECvRsweuKoTW9kZWw=')) and obj.Name == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('OUVsyXPBFhwasodvdiqvvuiDnlRPctujpGzvrtXcdPGcuvaAQVIQHCHU21hbGwgVHJlZQ==') then
+                                table.insert(trees, obj)
+                            end
+                        end
+                    end
+                    if map:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('MunrlsRxWhGihoratqgmvQrfeoNTjKAhlQhNHcAeNNWbrxhlddZRJjtTGFuZG1hcmtz')) then
+                        for _, obj in ipairs(map.Landmarks:GetChildren()) do
+                            if obj:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('WEyadsGFwVJfzSCsYqXUeCxEuyMDEViQpfEAJZGbokLaMoveGRTLaRFTW9kZWw=')) and obj.Name == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('eAszPSoKGdeQyfbkkngfjkgJTkFNBXHKXObTPgGoSSJlexgYvTuGQoWU21hbGwgVHJlZQ==') then
+                                table.insert(trees, obj)
+                            end
+                        end
+                    end
+                end
+                for _, tree in ipairs(trees) do
+                    local trunk = tree:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('InPhIrmJPTCmsFlJcNiQiDyfSiKlAlOMSxuEVUcWqnkHTPNEeIshHFzVHJ1bms='))
+                    if trunk and trunk:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('JwnVZbrmkNfGEmKketXtLUZFlIDaNUpBDMApzOonNTudYcINdQYmbhZQmFzZVBhcnQ=')) and (trunk.Position - hrp.Position).Magnitude <= auraRadius then
+                        local alreadyammount = false
+                        task.spawn(function()
+                            while chopAuraToggle and tree and tree.Parent and not alreadyammount do
+                                alreadyammount = true
+                                currentammount = currentammount + 1
+                                pcall(function()
+                                    ReplicatedStorage:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('LNjdZBVUEGHimdhZbXLRjNkFEgBTOKTCRRphTYamLuKbOxLErQlZBOaUmVtb3RlRXZlbnRz')).ToolDamageObject:InvokeServer(
+                                        tree,
+                                        tool,
+                                        tostring(currentammount) .. AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('CTWKyDEoIeUcRJQQzwYfAAOtTnYYQozvpcMsBlYmneotspfeqhKywrCXzczNjc4MzE2ODg='),
+                                        CFrame.new(-2.962610244751, 4.5547881126404, -75.950843811035, 0.89621275663376, -1.3894891459643e-08, 0.44362446665764, -7.994568895775e-10, 1, 3.293635941759e-08, -0.44362446665764, -2.9872644802253e-08, 0.89621275663376)
+                                    )
+                                end)
+                                task.wait(0.5)
+                            end
+                        end)
+                    end
+                end
+                task.wait(0.1)
+            else
+                task.wait(1)
+            end
+        else
+            task.wait(0.5)
+        end
+    end
+end
+
+function wiki(nome)
+    local c = 0
+    for _, i in ipairs(Workspace.Items:GetChildren()) do
+        if i.Name == nome then
+            c = c + 1
+        end
+    end
+    return c
+end
+
+function ghn()
+    return math.floor(LocalPlayer.PlayerGui.Interface.StatBars.HungerBar.Bar.Size.X.Scale * 100)
+end
+
+function feed(nome)
+    for _, item in ipairs(Workspace.Items:GetChildren()) do
+        if item.Name == nome then
+            ReplicatedStorage.RemoteEvents.RequestConsumeItem:InvokeServer(item)
+            break
+        end
+    end
+end
+
+function notifeed(nome)
+    WindUI:Notify({
+        Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hcQMxFqGkQYaTlqScExxTyrVFDnpJNFeeJGOgJRrHQpJDhBHKLmBGyeQXV0byBGb29kIFBhdXNlZA=='),
+        Content = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('OdAtWFRcAHIEquHCxDKGmUieezzrWONaCOSrwLFOYWFuDpcHMnEktQBVGhlIGZvb2QgaXMgZ29uZQ=='),
+        Duration = 3
+    })
+end
+
+local function moveItemToPos(item, position)
+    if not item or not item:IsDescendantOf(workspace) or not item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rHaKtSbMTLdzCctwMDDTuRZXwUITxDBTUztqzGCzszWRdtrctClWyaaQmFzZVBhcnQ=')) and not item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ezGRDXsGQxXwAYOnkWABPcMOTvunorOKsAcwCmHRImMtLwUtCqwqQDMTW9kZWw=')) then return end
+    local part = item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('oYgDNwunRwAQLYqQVfIydShTztfYjbkEwvIbZWgXXSkgkSfYcsyzMDMTW9kZWw=')) and (item.PrimaryPart or item:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ExWJVMkoPoKebPequkdzgcQNueMkPqEjNjgCOSWtLlKjizEhbKYkUzHQmFzZVBhcnQ=')) or item:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('IntXeyRupabQTJbRrqOqvGBKBWaUGFXqmcsZApOfdAMtYVHAQhTCzJYSGFuZGxl'))) or item
+    if not part or not part:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('DReherQRBOJUHqQDYkUPphLBLdaqIEIkupRGttdtCwVBimPywWHJBsSQmFzZVBhcnQ=')) then return end
+
+    if item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('qhxFftayebcWTuaBYAndJFbJEJvpAjWrcXMBoUyyBdzXbajddvrZouiTW9kZWw=')) and not item.PrimaryPart then
+        pcall(function() item.PrimaryPart = part end)
+    end
+
+    pcall(function()
+        game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('QPaTUEpPzOZaFGHfSuswgWlPKitovUgBHOHbhpsTDlTAqMeFdzLuRsxUmVwbGljYXRlZFN0b3JhZ2U=')):WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('zIlTKadkLtvnhEmoBHDytDktYeskUXpzLXGkNUIwpjVsupNGTiCnBmfUmVtb3RlRXZlbnRz')).RequestStartDraggingItem:FireServer(item)
+        if item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('AjKOPxcZrNGNDeHVYVAwFPFvknhixZVXuqQHzykYrQbVNyQkOMatpwsTW9kZWw=')) then
+            item:SetPrimaryPartCFrame(CFrame.new(position))
+        else
+            part.CFrame = CFrame.new(position)
+        end
+        game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('uZlewRUHhlnqHaqNmVHlVivSZOWupkPWoVtWewTsffGpIUNpVwPIjGkUmVwbGljYXRlZFN0b3JhZ2U=')):WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ISFPOZxKkivNoifCXMKfurWLcXjLsNrqvLigyiraJthAgQTDgAdkRMSUmVtb3RlRXZlbnRz')).StopDraggingItem:FireServer(item)
+    end)
+end
+
+local function getChests()
+    local chests = {}
+    local chestNames = {}
+    local index = 1
+    for _, item in ipairs(workspace:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ZSlwTUOThFfXxVFRYStTLGBgBftsXArzYkOQaXRyuWKDYTdbWJHgnPQSXRlbXM=')):GetChildren()) do
+        if item.Name:match(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('RyetfQjVQhWlFfRWbtnfajxqSAAIHAIIkALJqPHgKzyVIPhIsftgxHHXkl0ZW0gQ2hlc3Q=')) and not item:GetAttribute(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('uVFrRKkAyEiHVqRfMsUjdDPAEhDbXroRYLwTrNoKleakLCBsezsgHEvODcyMTA4MTcwOE9wZW5lZA==')) then
+            table.insert(chests, item)
+            table.insert(chestNames, AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('LujPrMVvLxovvMBqmdUfEyuOhGKJVgGOWCrxccwsywQfVBhJIeVAVjLQ2hlc3Qg') .. index)
+            index = index + 1
+        end
+    end
+    return chests, chestNames
+end
+
+local currentChests, currentChestNames = getChests()
+local selectedChest = currentChestNames[1] or nil
+
+local function getMobs()
+    local mobs = {}
+    local mobNames = {}
+    local index = 1
+    for _, character in ipairs(workspace:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('FXlAbQSDLqvdKzrdbbLgkraLlIJIhAGoCTMhmSbCktzJpcUkrBwxyCqQ2hhcmFjdGVycw==')):GetChildren()) do
+        if character.Name:match(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('UNhezkAgNxdLyptpbhGJCXjKuyixbtsfACZLBVqoGtRFvUOJGZtDjAPXkxvc3QgQ2hpbGQ=')) and character:GetAttribute(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('lZGwsYvlGDfxdbkwAwnhHUhNfgrgKuMPZpUSOBebtqXvLNjemAJLTTATG9zdA==')) == true then
+            table.insert(mobs, character)
+            table.insert(mobNames, character.Name)
+            index = index + 1
+        end
+    end
+    return mobs, mobNames
+end
+
+local currentMobs, currentMobNames = getMobs()
+local selectedMob = currentMobNames[1] or nil
+
+function tp1()
+	(game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('UIxWiOkPkwieQFhpeoqOBTdGGdhRoCotaHaunwVJQarMhqtQZSjWdebSHVtYW5vaWRSb290UGFydA==')).CFrame =
+CFrame.new(0.43132782, 15.77634621, -1.88620758, -0.270917892, 0.102997094, 0.957076371, 0.639657021, 0.762253821, 0.0990355015, -0.719334781, 0.639031112, -0.272391081)
+end
+
+local function tp2()
+    local targetPart = workspace:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('tyzVHGjCIiyRLMYLBZvrggnEnnDMCGoevKIJdnbBApoWXqFUpQYeIZCTWFw'))
+        and workspace.Map:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('pmosKTmwwoNIKtzeyfOfTwMSTTEMlxXrLNhfelcjurEiKcfnPRhHGSiTGFuZG1hcmtz'))
+        and workspace.Map.Landmarks:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('BUZBbuQHTwFzvnMpxjvyKoiHwuOyfaXiRodwEVgvXmtoVFoOqmdzQmyU3Ryb25naG9sZA=='))
+        and workspace.Map.Landmarks.Stronghold:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('FIgMIogukdKTLFQVnXZwubCaGDQxPtakLWghzcKVFflphowtcanCBGSRnVuY3Rpb25hbA=='))
+        and workspace.Map.Landmarks.Stronghold.Functional:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hjHBMfVMVGIVoGDKPhaRixkFbZPpuuNwPlFgzrPMNpMJTHtjgVdjwrsRW50cnlEb29ycw=='))
+        and workspace.Map.Landmarks.Stronghold.Functional.EntryDoors:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('QaHcCOgZthfAtYzpmNfaOxwDmNZcLysIWdoGIkPqzwQSXGGLONFCQHvRG9vclJpZ2h0'))
+        and workspace.Map.Landmarks.Stronghold.Functional.EntryDoors.DoorRight:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('AqGySvAhmKTCkCjoxHeoYeiYCXVQhcNLGCozWWqGOPutbzvgXdsZUyNTW9kZWw='))
+    if targetPart then
+        local children = targetPart:GetChildren()
+        local destination = children[5]
+        if destination and destination:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('omSJxFuFWJfoDRXPLGaqfkOgDMWDytTzaWGwZwXNAUKWhIPjnAnwBjZQmFzZVBhcnQ=')) then
+            local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('TYhGyLerMKIMcGeAalhzMWYBfJUwlsPEAFrXLDFztYnJsECPUpZgUqpSHVtYW5vaWRSb290UGFydA=='))
+            if hrp then
+                hrp.CFrame = destination.CFrame + Vector3.new(0, 5, 0)
+            end
+        end
+    end
+end
+
+local flyToggle = false
+local flySpeed = 1
+local FLYING = false
+local flyKeyDown, flyKeyUp, mfly1, mfly2
+local IYMouse = game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('MuLvvNgHkIwhOaBDwCFDYThaxmHQBzTHCrzbwYuUXSeCgfYEwKaAbEvVXNlcklucHV0U2VydmljZQ=='))
+
+-- Fly pc
+local function sFLY()
+    repeat task.wait() until Players.LocalPlayer and Players.LocalPlayer.Character and Players.LocalPlayer.Character:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('AxbkTQIyFVbnSeNCbFtdQZoqBJSjlSPURiczbIffWrRuBjFzuhJPyrxSHVtYW5vaWRSb290UGFydA==')) and Players.LocalPlayer.Character:FindFirstChildOfClass(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('LNRHdfGWzSmGNEBgLKvUltPhWHynjZlxpZwnCfazIZAlTQduDSkDanaSHVtYW5vaWQ='))
+    repeat task.wait() until IYMouse
+    if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect(); flyKeyUp:Disconnect() end
+
+    local T = Players.LocalPlayer.Character:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('NhfBlMEPZnLDIASOpIWXLJVdFFslcIyLZigCJKTNJFkUPtaNBRufJBoSHVtYW5vaWRSb290UGFydA=='))
+    local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+    local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+    local SPEED = flySpeed
+
+    local function FLY()
+        FLYING = true
+        local BG = Instance.new(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('OOfNbCzENednKWpQMqVZwtaObqGxRtzmcucrfJLqSovFFIHmKMgIyOUQm9keUd5cm8='))
+        local BV = Instance.new(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('wvNKOopuSEFqnQiNsUOWYIhhDYjlHhBZXCBkYEWFaXdhhRxFiahNEJjQm9keVZlbG9jaXR5'))
+        BG.P = 9e4
+        BG.Parent = T
+        BV.Parent = T
+        BG.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+        BG.CFrame = T.CFrame
+        BV.Velocity = Vector3.new(0, 0, 0)
+        BV.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+        task.spawn(function()
+            while FLYING do
+                task.wait()
+                if not flyToggle and Players.LocalPlayer.Character:FindFirstChildOfClass(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('NYZsCFVaIVOrQoKGjOZNvttLjLJAoxHlQdLCkpKfEdiVPlPmRiGiJgySHVtYW5vaWQ=')) then
+                    Players.LocalPlayer.Character:FindFirstChildOfClass(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('fJKGYjMXcVuKUIVnoUbeNfcaQQtwbVeWVfXIEabDSxQOCYQeLmKrbdpSHVtYW5vaWQ=')).PlatformStand = true
+                end
+                if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
+                    SPEED = flySpeed
+                elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
+                    SPEED = 0
+                end
+                if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 or (CONTROL.Q + CONTROL.E) ~= 0 then
+                    BV.Velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+                    lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
+                elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and (CONTROL.Q + CONTROL.E) == 0 and SPEED ~= 0 then
+                    BV.Velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+                else
+                    BV.Velocity = Vector3.new(0, 0, 0)
+                end
+                BG.CFrame = workspace.CurrentCamera.CoordinateFrame
+            end
+            CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+            lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+            SPEED = 0
+            BG:Destroy()
+            BV:Destroy()
+            if Players.LocalPlayer.Character:FindFirstChildOfClass(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('PIFkLxPaBZsGncmCXIWCoopcdWedZwlzqTNIAchzegcuJlMyKATDGDtSHVtYW5vaWQ=')) then
+                Players.LocalPlayer.Character:FindFirstChildOfClass(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('mbnDzHiSfODGbWiEMJCvqAFFQTTtMkYWpKNROwjgYykCKgZPoHINMciSHVtYW5vaWQ=')).PlatformStand = false
+            end
+        end)
+    end
+    flyKeyDown = IYMouse.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Keyboard then
+            local KEY = input.KeyCode.Name
+            if KEY == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('WyMPQRNdVzCmHrpXFpNxEVeVERTLTlujCPEDCwPwkzWHBxmzIvFvKPRVw==') then
+                CONTROL.F = flySpeed
+            elseif KEY == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('lTDayMDFnyEKFlwwyzsgxXEpZhNvppdIhnVLaUEEOqfWHqPcnAgXRCIUw==') then
+                CONTROL.B = -flySpeed
+            elseif KEY == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('CPjVDNWrDuundAFBwAyoxrjiXHPCzUIQRRbMJYVBoIGaUuaHwIQTPlwQQ==') then
+                CONTROL.L = -flySpeed
+            elseif KEY == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('sRImrbotmwXpBDVeNcAMbVkpEiadCOslJenEVdZHTbDwIxthUdYVLzyRA==') then 
+                CONTROL.R = flySpeed
+            elseif KEY == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('CEclMHdNBuXkgVdiuMhDlrwnnQTWMcUEsWCgjadlSRZCKOejekpjYzjRQ==') then
+                CONTROL.Q = flySpeed * 2
+            elseif KEY == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('JtdffgVjthFktHlHJBmMEdATMMeZYZWoxpLeyczObsXCshTjoSseojrUQ==') then
+                CONTROL.E = -flySpeed * 2
+            end
+            pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
+        end
+    end)
+    flyKeyUp = IYMouse.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Keyboard then
+            local KEY = input.KeyCode.Name
+            if KEY == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('HHwClYemgJDCttZOdJMHfSkEknHFyCzILcNVOcAudiOrRLwqzkVemqjVw==') then
+                CONTROL.F = 0
+            elseif KEY == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('zdcTpsVuIizmOPXQTsBgONdIRZfZIeSWbBQCQEBZnhkBRbUHaGmInKzUw==') then
+                CONTROL.B = 0
+            elseif KEY == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('mQywoUJWodghDOkkEThGsnwPuIFkylMjirYPXOhvcRcTZORFkhYwyaHQQ==') then
+                CONTROL.L = 0
+            elseif KEY == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('gJIKMRseBvtugNSjXKRrdSZNNJzSnvLjDUJITeeEytHRTLjMSCQxSkARA==') then
+                CONTROL.R = 0
+            elseif KEY == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('oZgQBHjlErqvfHnrHYPBswpKhndFsClWzSFJSjluRilnDBKfROSgJSzRQ==') then
+                CONTROL.Q = 0
+            elseif KEY == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('uswymSLIkBcFvOzlPWIdeHkqpSswEuPrIEeDdsKMRwqolqzyEWFHlFjUQ==') then
+                CONTROL.E = 0
+            end
+        end
+    end)
+    FLY()
+end
+
+-- Fly mobile
+local function NOFLY()
+    FLYING = false
+    if flyKeyDown then flyKeyDown:Disconnect() end
+    if flyKeyUp then flyKeyUp:Disconnect() end
+    if mfly1 then mfly1:Disconnect() end
+    if mfly2 then mfly2:Disconnect() end
+    if Players.LocalPlayer.Character:FindFirstChildOfClass(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('yprMEUBSrIndFupAqrECqVHFSdYsDqKSIpuBicvzxdhIXFTxRkTKRDJSHVtYW5vaWQ=')) then
+        Players.LocalPlayer.Character:FindFirstChildOfClass(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('eeUdHSgCIMjWReMckwyeKESstLtzYAbJJMWnEWLmBVZVoSbRsPHfLYKSHVtYW5vaWQ=')).PlatformStand = false
+    end
+    pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
+end
+
+local function UnMobileFly()
+    pcall(function()
+        FLYING = false
+        local root = Players.LocalPlayer.Character:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('toYCIfZeMYGzSSyqGFvWKzIgPXCbIwRVrqeuJUyOJeTLMvFeQfUHGlxSHVtYW5vaWRSb290UGFydA=='))
+        if root:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('bTXbsyzzLDfVemgbLLdFfDsjGIBGfyHckDZTAbtZnAcviqGJukzEFtEQm9keVZlbG9jaXR5')) then root:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('LtAqKgQRYqKPIyozZByrGGbdWvaSFhsWVRUBifRXKeDewRjKhAAksKvQm9keVZlbG9jaXR5')):Destroy() end
+        if root:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('PWkKwrvycDfhqQoVswCberlpJvoOskCMNkAFbTebGwcSIvWSUNSCiouQm9keUd5cm8=')) then root:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('kqvjsrgVLBFclOiPcUvvDvsYgeophrHALFaXOUuaiHZySiyriHCKlArQm9keUd5cm8=')):Destroy() end
+        if Players.LocalPlayer.Character:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('lauclsGaYnDSpdMqFfmhGRvNgTwrmRuSzuEVWsVYSAwfOqiOmnpSbLySHVtYW5vaWQ=')) then
+            Players.LocalPlayer.Character:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('WIaFatZBDmndqhnbyQhqRJJdHIMFBFGyeQfLCAMTWxfhdweItVVVRaLSHVtYW5vaWQ=')).PlatformStand = false
+        end
+        if mfly1 then mfly1:Disconnect() end
+        if mfly2 then mfly2:Disconnect() end
+    end)
+end
+
+local function MobileFly()
+    UnMobileFly()
+    FLYING = true
+
+    local root = Players.LocalPlayer.Character:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('PqEFrqjORFVHQOIBzgsxfWaliLntvPhBMyNKMpmLVJuFYJIFLPJAiRGSHVtYW5vaWRSb290UGFydA=='))
+    local camera = workspace.CurrentCamera
+    local v3none = Vector3.new()
+    local v3zero = Vector3.new(0, 0, 0)
+    local v3inf = Vector3.new(9e9, 9e9, 9e9)
+
+    local controlModule = require(Players.LocalPlayer.PlayerScripts:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hRUFhgFmrEMTOtVwOrwOnQkOtCpceEXlrERNrpDDMeATRAfAOeTbZAjUGxheWVyTW9kdWxl')):WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('lNUUViRdaNvwLqhYCWYudctybiFvNjTplcqCaSJBnbIeRPSeoYKthClQ29udHJvbE1vZHVsZQ==')))
+    local bv = Instance.new(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('RgReCimdSDIwWQYVNYMqHxrShsUjdhwIAyJxCHQWteelunkWNZVAvgnQm9keVZlbG9jaXR5'))
+    bv.Name = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('xfDYdNsdqRLeTDtfFtbkHPmvNgHHnlfdCNGUpMeATttJrvhSWHPCMIWQm9keVZlbG9jaXR5')
+    bv.Parent = root
+    bv.MaxForce = v3zero
+    bv.Velocity = v3zero
+
+    local bg = Instance.new(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('maceVHEJOBjhEYOjuVAxfmmsBuQxgOafeTDPXUVoNvAKHxKHPeWTQinQm9keUd5cm8='))
+    bg.Name = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('iADQBpSLyzGtnFJwTSGqMtOxeHDWnQxhwCDHzjXnGfyinIfZJZJcBFkQm9keUd5cm8=')
+    bg.Parent = root
+    bg.MaxTorque = v3inf
+    bg.P = 1000
+    bg.D = 50
+
+    mfly1 = Players.LocalPlayer.CharacterAdded:Connect(function()
+        local newRoot = Players.LocalPlayer.Character:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('yZtQRkNeECHTrKdiuFzRYXxAKLwzVHPXUShCyQLerFlVcYaxmZiHUsoSHVtYW5vaWRSb290UGFydA=='))
+        local newBv = Instance.new(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('WPmtZGmAlbgcYmrZpDnTiUrFPpZIMySVeYvWIQfUgWmDxbyUaVvGYODQm9keVZlbG9jaXR5'))
+        newBv.Name = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('yVpJMlkWIsHqVirvmVksdoEtqtCMNjfDRELGJhHCmhkTMmIVMgEDjsWQm9keVZlbG9jaXR5')
+        newBv.Parent = newRoot
+        newBv.MaxForce = v3zero
+        newBv.Velocity = v3zero
+
+        local newBg = Instance.new(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rsCpVGxtPqgjnPlqytAlkoVgFnjhcqymqwbHCWANJCzQaFTyxYmXqyeQm9keUd5cm8='))
+        newBg.Name = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('UhvSjzNfANwXacchnschiAvPMztkBeaLKlCBKsABrpjFFYzzzzxuHTXQm9keUd5cm8=')
+        newBg.Parent = newRoot
+        newBg.MaxTorque = v3inf
+        newBg.P = 1000
+        newBg.D = 50
+    end)
+
+    mfly2 = game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('xTEJxFOwuTLlpSQtSLgudMNRrLThmtgJOVbSkuPsABEGjKTjfMiKffVUnVuU2VydmljZQ==')).RenderStepped:Connect(function()
+        root = Players.LocalPlayer.Character:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('fYLIzifcUZanAAVLQaigTdFseLamFJxqdiStxNXpfsLGlrZpKYeDrqKSHVtYW5vaWRSb290UGFydA=='))
+        camera = workspace.CurrentCamera
+        if Players.LocalPlayer.Character:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('AOSzLNZZaWPlpOZrnaWgissyyhqYVsLIWPffopfKZMarEKoskjMhxloSHVtYW5vaWQ=')) and root and root:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('OXEfbPECuUedvANISEqVthLXttpSGeXZDYtheJKdnsXrhhoPfNOAeUHQm9keVZlbG9jaXR5')) and root:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('lUjYbXJrIwjMbgIZPaTuaRVeUFlFdVavoeyXXBYvWAGuLSUsJHLZhufQm9keUd5cm8=')) then
+            local humanoid = Players.LocalPlayer.Character:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('KJPFLxIrciHLuyqKKgpbYyXxlJHSvrBQbjWNSQtjOEkLwufjrRPdmEMSHVtYW5vaWQ='))
+            local VelocityHandler = root:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('LIXsWasYMdZgEEZzZZITYMfiEGSxsenwoCAdxCjnTSeyWQrSTLIPnmSQm9keVZlbG9jaXR5'))
+            local GyroHandler = root:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hCjlVfpXYQhAxOJqOkTUHeMApsOfuhJLvApSqKkKnSwkYfCLluHPMoPQm9keUd5cm8='))
+
+            VelocityHandler.MaxForce = v3inf
+            GyroHandler.MaxTorque = v3inf
+            humanoid.PlatformStand = true
+            GyroHandler.CFrame = camera.CoordinateFrame
+            VelocityHandler.Velocity = v3none
+
+            local direction = controlModule:GetMoveVector()
+            if direction.X > 0 then
+                VelocityHandler.Velocity = VelocityHandler.Velocity + camera.CFrame.RightVector * (direction.X * (flySpeed * 50))
+            end
+            if direction.X < 0 then
+                VelocityHandler.Velocity = VelocityHandler.Velocity + camera.CFrame.RightVector * (direction.X * (flySpeed * 50))
+            end
+            if direction.Z > 0 then
+                VelocityHandler.Velocity = VelocityHandler.Velocity - camera.CFrame.LookVector * (direction.Z * (flySpeed * 50))
+            end
+            if direction.Z < 0 then
+                VelocityHandler.Velocity = VelocityHandler.Velocity - camera.CFrame.LookVector * (direction.Z * (flySpeed * 50))
+            end
+        end
+    end)
+end
+
+local Window = WindUI:CreateWindow({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('fFvXthOEbbplkFWTMZQNNiapbMIFdxtAnpVnLtdUzODhsmWrcPDoSZzY2FwIGN1dCBodWIgbG9jYWw='),
+    Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('XEcsyCdClfgvUmpScnqVIgzmMmhrqCFlRbctRdbcQRRPiynmlBccaOGc3Rhcg=='),
+    IconThemed = true,
+    Author = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('TptNklgBZlNZUmqUazcKmbcXJcSsYWOcVoleKAkUmCnJQEyFAhDjMUZU1RFTExBUg=='),
+    Folder = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('wpeejFSHTrDMXELCwxRFlhEerCaDOAbIBfcxbWsbgTQbDAJTQsmJffHc3RlbGxhcg=='),
+    Size = UDim2.fromOffset(500, 350),
+    Transparent = true,
+    Theme = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('nbnvIsrlLPBbKHHCSyRIfjBVoqjNQLIoYYUoyjOwLCtDqadyPOnWCciRGFyaw=='),
+    SideBarWidth = 200,
+    ScrollBarEnabled = true,
+})
+
+Window:EditOpenButton({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('HZyAwEQpJZJWPrgqwLEfeEKIzjXJIPdIfrtPKESwnBALfHOziFNRrBuT3BlbiBjYXAgY3V0IGh1YiBsb2NhbA=='),
+    Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('NcMsZMPWlDYreqhPPVOAmwgUejjYRZtRapniscBlBywDAZmnUSPfpZobW9uaXRvcg=='),
+    CornerRadius = UDim.new(0, 6),
+    StrokeThickness = 2,
+    Color = ColorSequence.new(Color3.fromRGB(30, 30, 30), Color3.fromRGB(255, 255, 255)),
+    Draggable = true,
+})
+
+local Tabs = {}
+
+Tabs.Combat = Window:Tab({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('NKqwXubmjeuaoYAjoYqltCxSdXLBipozvwKFVPjadRSfAVQmPXJGcXjQ29tYmF0'),
+    Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('GrMFcqBwoAKkbtfFcgCSUgNcLEAKjzvmGwbIBlqGmNYoYNvMLLFiZsXc3dvcmQ='),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('irZBAfTISaRBKNbhqcsKnCYdHlPdmHqLzRuwhnJzxRwmBFcMGSGWSfaU3RlbGxhcg==')
+})
+Tabs.Main = Window:Tab({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('nQtmglcblxjdODzZlbgoHIYtbmrpqPmsUjmheOLKpOwbxqfiLgJwihyTWFpbg=='),
+    Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('MDsBxcNreKmZxDOLegCVqpcjIpAzlsuQPBtCeEizURUDQSFtHYLkRDrZXll'),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('OPVEwARwQsEyfhsMLtEnyZPomuZZoaVnXZeBFwsDksJosOMQwOWpnKEU3RlbGxhcg==')
+})
+Tabs.Auto = Window:Tab({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('DCPVZqrzJjqIRYcbQBQRvtuaMNETOjVLywWElAUrjxITpjXuEQWOBzeQXV0bw=='),
+    Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('zAqkolBAqlNVAtzGFdxYLYuYDuQbDopbrpxlwgslCSyqGYasiaJPuRFd3JlbmNo'),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('DPewVvVQWtCFPEAooGAMDfpiVnWEibaWBlvECPPiCppgUVPmSnPGrFUU3RlbGxhcg==')
+})
+
+Tabs.esp = Window:Tab({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('HcstDyMniNNGTFduQrlbTsXAQSxWkwVwcxJQwDgCbmvmVCPNaRZiIdhRXNw'),
+    Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('DAIwsyLsIVkdDeaALfckanEzQnuPKgfZEVVGKNelDdZTRQjIrwBfGsqc3BhcmtsZXM='),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('wAuKveBwuTPnjlhoSgWnJNFdNjDhivffvdyClgrYviCMOUnNvBACKYBU3RlbGxhcg==')
+})
+Tabs.br = Window:Tab({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('TceBjtQOQSTePIyRMBTQEkxQgCOwySDVckPcIikAHmqgfSvgJyFPPiVQnJpbmc='),
+    Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('PYyChRpvFIqGXOdDiZmivINpupTTTuTmQGmpOntAtzCRxSJAUiossKOcGFja2FnZQ=='),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('vhhdUZTOemgEpxGgqWoJmhezmyibRSzkvAVdNQmdaCHhTYvOVpNVGgCU3RlbGxhcg==')
+})
+Tabs.Tp = Window:Tab({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('SZUoimwVnhKQvRuUZOMHcldcfTogKvzMQFRdxKQnHJfnKUJYajwHRyUVGVsZXBvcnQ='),
+    Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('RCasbnjfTlfwOFrIINRsufyGFPawqMYiAGYqTwJbutwmBTPAZZaGaagbWFw'),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('KAyCQaTqUzCfhXeaqdNnpgZHRXIBbnLZralGnJvboRrcHSIRIOClyALU3RlbGxhcg==')
+})
+Tabs.Fly = Window:Tab({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('qMuePfHjtqIPbkSrrLyKpQZIxEMVeQoTBykDmalrtHAPMbJSQoEOzoOUGxheWVy'),
+    Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('OzdNpRCpDCxwsJZuPGFCCqlnAQGFPOdzBEsXjiCgPNkAqgFrWOtGzWwdXNlcg=='),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('cDzJzRSgjyRmpkZjQFXEEIAVUTLEpssPdnzsRiybptPUdNObwIJTiyYU3RlbGxhcg==')
+})
+
+Window:SelectTab(1)
+
+Tabs.Combat:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('bvvoKpsoRzVvtHzdxnXWzQpIHQMaITMqyaFkuJMGtqKITfywFbMGVLKQXVyYQ=='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('puaVUmJVxHlqSPjosnYThObwZtUChaMxDtVrraNmSWiPdkUiZNMyCufc3Rhcg==') })
+
+Tabs.Combat:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('bXjJPtbYeaEywHNtUTAFpeElYoHrHHIHFLEJiwAhPIuxmYteabkydmgS2lsbCBBdXJh'),
+    Value = false,
+    Callback = function(state)
+        killAuraToggle = state
+        if state then
+            task.spawn(killAuraLoop)
+        else
+            local tool, _ = getAnyToolWithDamageID(false)
+            unequipTool(tool)
+        end
+    end
+})
+
+Tabs.Combat:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('feLKdIwVLaYWjzZEUNaaOsadEKdxPUFgkgRwIDAcONGZnYgEOpWIXoeQ2hvcCBBdXJh'),
+    Value = false,
+    Callback = function(state)
+        chopAuraToggle = state
+        if state then
+            task.spawn(chopAuraLoop)
+        else
+            local tool, _ = getAnyToolWithDamageID(true)
+            unequipTool(tool)
+        end
+    end
+})
+
+Tabs.Combat:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('DyGKqZXRrHVaxyadHWBYqRWJdZNqCGeyqEscWbuUrnyAcZnFzFZThIXU2V0dGluZ3M='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('fDLQaZCCYrZKrKopqHtXpFGGgCMrFMicCFxNSsTQFVvEDVrylkSLupUc2V0dGluZ3M=') })
+
+Tabs.Combat:Slider({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('GwfBqoGpoVtftgLpVCXjvIhUJekxazxMxXMeYiFsgSQYyBzRVzuMPWKQXVyYSBSYWRpdXM='),
+    Value = { Min = 50, Max = 500, Default = 50 },
+    Callback = function(value)
+        auraRadius = math.clamp(value, 10, 500)
+    end
+})
+
+Tabs.Main:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('yufIiSvIPrXjDdgLpYegrXqAbvrewqBYomSeziYMGHuEoIqqywhilVyQXV0byBGZWVk'), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('mvIizBLUzQVwCDdLYHPhlgaCdILTcPqDcKsMFVhckybhICOvOUcqowUdXRlbnNpbHM=') })
+
+Tabs.Main:Dropdown({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('PWiSqthoPlIEbpcesdhyVCStkLOKgCCSUBFbcUhWjgjrleRaRMwFYchU2VsZWN0IEZvb2Q='),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('mdMGuVDUpRbCfAhalTwLYYCCiDKvNOdnSrWblYEwgfsZDnpDAzacQrZQ2hvb3NlIHRoZSBmb29k'),
+    Values = alimentos,
+    Value = selectedFood,
+    Multi = false,
+    Callback = function(value)
+        selectedFood = value
+    end
+})
+
+Tabs.Main:Input({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('SDpAsMnszBuhKtMyuUyXAOuZjuzVYREbdZJdByKnsVNSLGIyodUrcHVRmVlZCAl'),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('zDdkItstUUAlaHlRdUTibBkLkXygzKUhyeukgNKrvAfJNghYYPTtvHhRWF0IHdoZW4gaHVuZ2VyIHJlYWNoZXMgdGhpcyAl'),
+    Value = tostring(hungerThreshold),
+    Placeholder = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('aaaTlnzOFryPCkxISpchTesIzxrFvlXYNRGMcfEkqrXUeuTMANWYWjvRXg6IDc1'),
+    Numeric = true,
+    Callback = function(value)
+        local n = tonumber(value)
+        if n then
+            hungerThreshold = math.clamp(n, 0, 100)
+        end
+    end
+})
+
+Tabs.Main:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('EdiBZDzVGDazDMZeoSBluatFNRUxEtoHbEupAmBxArhNUwkkHIcHrwBQXV0byBGZWVk'),
+    Value = false,
+    Callback = function(state)
+        autoFeedToggle = state
+        if state then
+            task.spawn(function()
+                while autoFeedToggle do
+                    task.wait(0.075)
+                    if wiki(selectedFood) == 0 then
+                        autoFeedToggle = false
+                        Tabs.Combat:Find(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('fmWqhCyCSplOjolKILwZHYKsXpRLUhzRRRuyNmJSltxtJcQerEzEzkfQXV0byBGZWVk')):SetValue(false)
+                        notifeed(selectedFood)
+                        break
+                    end
+                    if ghn() <= hungerThreshold then
+                        feed(selectedFood)
+                    end
+                end
+            end)
+        end
+    end
+})
+
+Tabs.Auto:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rshlSssWbYKLCWmdkWTOzdXjEaGoOffaviDGujXOmdmHGhntdBFDxYaQXV0byBVcGdyYWRlIENhbXBmaXJl'), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('facTpNLrzgSpvKuxsefAtLTBGBDFYmRFeqkEBbhQvzEYpxueRdToWhWZmxhbWU=') })
+
+local autoUpgradeCampfireEnabled = false
+
+Tabs.Auto:Dropdown({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ZbfiBehxPbBtYHYaLVknsmeIgKriZqQdaoSBKiQStEezQlsOhHpFCzgQXV0byBVcGdyYWRlIENhbXBmaXJl'),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('kaluWkCkvIiVAkXCzLLJwgZLFjAdiqcMeJUWCLNYMhxtJWPJYQwYUDhQ2hvb3NlIHRoZSBpdGVtcw=='),
+    Values = campfireFuelItems,
+    Multi = true,
+    AllowNone = true,
+    Callback = function(options)
+        for _, itemName in ipairs(campfireFuelItems) do
+            alwaysFeedEnabledItems[itemName] = table.find(options, itemName) ~= nil
+        end
+    end
+})
+
+Tabs.Auto:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('nWprZkZXmvCugAcpHAHbseqXDBBUbwJortQwathTZJkUKwzGnIouMBmQXV0byBVcGdyYWRlIENhbXBmaXJl'),
+    Value = false,
+    Callback = function(checked)
+        autoUpgradeCampfireEnabled = checked
+        if checked then
+            task.spawn(function()
+                while autoUpgradeCampfireEnabled do
+                    for itemName, enabled in pairs(alwaysFeedEnabledItems) do
+                        if enabled then
+                            for _, item in ipairs(workspace:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('jisqihCnvwWxbPlNCaMDbcOsxptHsOUJXvlIxOzlpsYKuznXidBLLGSSXRlbXM=')):GetChildren()) do
+                                if item.Name == itemName then
+                                    moveItemToPos(item, campfireDropPos)
+                                end
+                            end
+                        end
+                    end
+                    task.wait(2)
+                end
+            end)
+        end
+    end
+})
+
+Tabs.Auto:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ZJsIoXyVikxtAdhpbFxFSGOugUsmUZSBGxcgMAFPApoNpMpQcOniDsUQXV0byBDb29rIEZvb2Q='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ZBjIsvcrlayFfCjkkbINgJBJQOsaQUnQTmIFgKVttHkZTDTOwHqQOwQZmxhbWU=') })
+
+Tabs.Auto:Dropdown({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('uGrvmvzebfcuhKKjCONTAZHYIUSnFTszMbsMWQAvjzbcYZqPBmQWbeWQXV0byBDb29rIEZvb2Q='),
+    Values = autocookItems,
+    Multi = true,
+    AllowNone = true,
+    Callback = function(options)
+        for _, itemName in ipairs(autocookItems) do
+            autoCookEnabledItems[itemName] = table.find(options, itemName) ~= nil
+        end
+    end
+})
+
+Tabs.Auto:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rziroVqotqjidrFLnoEOlkvHwFtJfUfGqlXbZBinxbjyOxRDtjyNauhQXV0byBDb29rIEZvb2Q='),
+    Value = false,
+    Callback = function(state)
+        autoCookEnabled = state
+    end
+})
+
+coroutine.wrap(function()
+    while true do
+        if autoCookEnabled then
+            for itemName, enabled in pairs(autoCookEnabledItems) do
+                if enabled then
+                    for _, item in ipairs(Workspace:WaitForChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('lGFDHvifmBlHtHVcEzdRzKpDOTkEJDJQLjmWURqLcQGSWemNzYtxbeGSXRlbXM=')):GetChildren()) do
+                        if item.Name == itemName then
+                            moveItemToPos(item, campfireDropPos)
+                        end
+                    end
+                end
+            end
+        end
+        task.wait(0.5)
+    end
+end)()
+
+Tabs.Tp:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('gppAKfQzFBVsVfuOkLZgTZEopssHoRyuSioghkvNHjgSqaaZDXFzrztVGVsZXBvcnQ='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ZBIWRlUaZrKKIAJjgUuhAokpJZQiFvDvCRIPlFRzLtZwbcYJlWAVpudbWFw') })
+
+Tabs.Tp:Button({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('NmjgmBbGRHdzJeUrPxDmKcLGiqwCQjnXNQSZqCamcmHaMuhFqipxqApVGVsZXBvcnQgdG8gQ2FtcGZpcmU='),
+    Locked = false,
+    Callback = function()
+        tp1()
+    end
+})
+
+Tabs.Tp:Button({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('BLwaHDJxFaWefQGIzHAqNWJkXhQBgVBwnKGOzVRlhjzymDqFLVIjzRGVGVsZXBvcnQgdG8gU3Ryb25naG9sZA=='),
+    Locked = false,
+    Callback = function()
+        tp2()
+    end
+})
+
+
+Tabs.Tp:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('OLpbjYLsPcYMDBXQcdqoMeepEQmwrUDZJVTGEOcuGRNsTANAzDHhlAHQ2hpbGRyZW4='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('oprvOJHzgDZPHnsUXBCOwzOoREjlrPCmmoxevrnailsXTjfZoprFDMSZXll') })
+
+local MobDropdown = Tabs.Tp:Dropdown({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('kkAPEUGpHgSLnioDuUKmWyvoMyiCSVpGGsQiXZOvrFVZfERLxBjyYRmU2VsZWN0IENoaWxk'),
+    Values = currentMobNames,
+    Multi = false,
+    AllowNone = true,
+    Callback = function(options)
+        selectedMob = options[#options] or currentMobNames[1] or nil
+    end
+})
+
+Tabs.Tp:Button({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('WeMExYFxuhxxLfyyXlcwGPtvqbndfueyaYsJJOoaNVNnVMppFnmTgVrUmVmcmVzaCBMaXN0'),
+    Locked = false,
+    Callback = function()
+        currentMobs, currentMobNames = getMobs()
+        if #currentMobNames > 0 then
+            selectedMob = currentMobNames[1]
+            MobDropdown:Refresh(currentMobNames)
+        else
+            selectedMob = nil
+            MobDropdown:Refresh({ AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('EUzDVTibTNIiyEhFPsZxIdSNNLeqHOdrlxBaCmwbzBtKDZKvEMDvEriTm8gY2hpbGQgZm91bmQ=') })
+        end
+    end
+})
+
+Tabs.Tp:Button({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('EMWtNsVjmqLSjPOHQevvWXuaWKUzBZTXTeRnPdquvBvDOwupIHCfnUIVGVsZXBvcnQgdG8gQ2hpbGQ='),
+    Locked = false,
+    Callback = function()
+        if selectedMob and currentMobs then
+            for i, name in ipairs(currentMobNames) do
+                if name == selectedMob then
+                    local targetMob = currentMobs[i]
+                    if targetMob then
+                        local part = targetMob.PrimaryPart or targetMob:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ZRddCKCmthZZulXhPzmDXvHYeelkjatSPeufzzfnUoiwFxhurBcMvupQmFzZVBhcnQ='))
+                        if part and game.Players.LocalPlayer.Character then
+                            local hrp = game.Players.LocalPlayer.Character:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rqwxKYpTKCDSJYCpAjRXpWKOJXEdAXfisxYqwXsMpwBnXfYMTZYUeAKSHVtYW5vaWRSb290UGFydA=='))
+                            if hrp then
+                                hrp.CFrame = part.CFrame + Vector3.new(0, 5, 0)
+                            end
+                        end
+                    end
+                    break
+                end
+            end
+        end
+    end
+})
+
+
+Tabs.Tp:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('mrdVTQIlAAbxYNXMLQmqyqbAsxQiZmTpZzLpNDHPDmChnBEdFRLOHjUQ2hlc3Q='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('AEaSQsyGShgjWbZjOBsxoLaLwIvDLfapgqcVVrezkJQsoChyPFhuuovYm94') })
+
+local ChestDropdown = Tabs.Tp:Dropdown({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('QigOwLoXXomxKUKSQVVttSYSvMSAlkKPLEoNEBqaijROTIaSJBNOpzhU2VsZWN0IENoZXN0'),
+    Values = currentChestNames,
+    Multi = false,
+    AllowNone = true,
+    Callback = function(options)
+        selectedChest = options[#options] or currentChestNames[1] or nil
+    end
+})
+
+Tabs.Tp:Button({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('lIklvdgbOmgxsqilVesXVexXSyGmdXszKVHSWFYUdGkfQrIecjTntUtUmVmcmVzaCBMaXN0'),
+    Locked = false,
+    Callback = function()
+        currentChests, currentChestNames = getChests()
+        if #currentChestNames > 0 then
+            selectedChest = currentChestNames[1]
+            ChestDropdown:Refresh(currentChestNames)
+        else
+            selectedChest = nil
+            ChestDropdown:Refresh({ AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('qcORxhCQFXtrKAeWgvsLVQfISNErPLkhTheFEwJJobfMgxyxBTSCisHTm8gY2hlc3RzIGZvdW5k') })
+        end
+    end
+})
+
+Tabs.Tp:Button({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ErasaaOSlrmSQWAvPttLeRKWdtuZusEdsthNgJVFBwTaSnRJsDcKxYwVGVsZXBvcnQgdG8gQ2hlc3Q='),
+    Locked = false,
+    Callback = function()
+        if selectedChest and currentChests then
+            local chestIndex = 1
+            for i, name in ipairs(currentChestNames) do
+                if name == selectedChest then
+                    chestIndex = i
+                    break
+                end
+            end
+            local targetChest = currentChests[chestIndex]
+            if targetChest then
+                local part = targetChest.PrimaryPart or targetChest:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('NoiAKwgimdILNgmWBwSWeUPyggLMGoHWepoeSXGXOksklTsoVFuELRwQmFzZVBhcnQ='))
+                if part and game.Players.LocalPlayer.Character then
+                    local hrp = game.Players.LocalPlayer.Character:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('HjtsLxVlWmKjFEplALEmRPCStEQRaCmGlstrGGOheKPwBovHrPRGRwvSHVtYW5vaWRSb290UGFydA=='))
+                    if hrp then
+                        hrp.CFrame = part.CFrame + Vector3.new(0, 5, 0)
+                    end
+                end
+            end
+        end
+    end
+})
+
+Tabs.br:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('bOViHpQawtMwCfHyBcvOWOOYsSesSaGiWlBvGKJBWVRboSyFyuChiawSnVuaw=='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('iTngZWBWVGQqQxlpbYLHyPXkjXSjLqloCrerqioxqhoAEAISLyIUoTJYm94') })
+
+Tabs.br:Dropdown({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('wmiBEGnoLfCxnOTlRUosOUoeWYljYrHCAxpeVeAsdMvfmrwDTjIvaCKU2VsZWN0IEp1bmsgSXRlbXM='),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('UpGnwZVFHATaOqmlpnNhlwVghWAOsbukeeYsKgpqiUkIybMNTMPbWeKQ2hvb3NlIGl0ZW1zIHRvIGJyaW5n'),
+    Values = junkItems,
+    Multi = true,
+    AllowNone = true,
+    Callback = function(options)
+        selectedJunkItems = options
+    end
+})
+
+Tabs.br:Button({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('yYZVdUQKKCUxfaNHwwHMeuWfaSjJUHqcXLDMcZJscNGtxUSZgelogYoQnJpbmcgSnVuayBJdGVtcw=='),
+    Locked = false,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        if not player.Character or not player.Character:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('riVxaskWgTpGKcupKGBWnJQSDNpJqYKHYrwmsNXgTfYTvIZeyXoafzESHVtYW5vaWRSb290UGFydA==')) then return end
+        local hrp = player.Character.HumanoidRootPart
+        local targetPos = hrp.Position + Vector3.new(2, 0, 0)
+        for _, itemName in ipairs(selectedJunkItems) do
+            for _, item in ipairs(workspace:GetDescendants()) do
+                if item.Name == itemName and (item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ccAgIyUlSqsldEPKqxIaRYPYuWHfuqRlRdGJsSYTuvUWdEWKAmPBGhkQmFzZVBhcnQ=')) or item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('KOyyIfPBwZHGhEzRAwWeZcrnHtyfLnHOpaFYDnyazuSoYPTriLcNlFSTW9kZWw='))) and (item.PrimaryPart or item:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('LwzuOIsXbmiYpyYcOVjvIcPsxWDrYMYlUMxsSYwBZQbTftxeCaJYMVqQmFzZVBhcnQ='))) then
+                    moveItemToPos(item, targetPos)
+                end
+            end
+        end
+    end
+})
+
+Tabs.br:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hVAKxemYmUDnJzhxvMROAXXHnuSqDAaIFQpQXEyeNfLCXIdaMKyEeEkRnVlbA=='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('tBFdSncbDlGrVcvxxCXKDzIgfAighDyKxmpOGfogmorSIqAIulNMQOCZmxhbWU=') })
+
+local fuelItems = {AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('fgQrhMTQSKVVqpKnlzkMmxEpgipJLEbgUfFslCwZkAplJENtehYqSwUTG9n'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('BHOUfKooiaDkKZYHZcLZaDFcdcaDWoyeHdprDHTBbchUMMRXTIJFAkmQ2hhaXI='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('WidQkdaanxywdLjaiCaBoxeBnRYDoWmySykShrNOwTbhfqZoqlQCFOHQ29hbA=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('TUqFPoqyCLZgJqSivpIWgnBoAYUdiDuRFWEXrhmgfWCWERIQgjNfgJMRnVlbCBDYW5pc3Rlcg=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('AFcFINDqIAUdrReNXkLoTjAxeAxgFSAEYgFmBzKfpZGldLyEfXVNirFT2lsIEJhcnJlbA==')}
+local selectedFuelItems = {}
+
+Tabs.br:Dropdown({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('CRdRtiDNTIPohvLIbAOmwUqKkGnCcvdMxVObYcYYwAGtrCXmtdiVTfLU2VsZWN0IEZ1ZWwgSXRlbXM='),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('StQXlrdBJMVXHAvcfwSUopaoDbzyNRjQVyCYbhAxhrzeKBORWRyxpPfQ2hvb3NlIGl0ZW1zIHRvIGJyaW5n'),
+    Values = fuelItems,
+    Multi = true,
+    AllowNone = true,
+    Callback = function(options)
+        selectedFuelItems = options
+    end
+})
+
+Tabs.br:Button({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rUvSVdCinAwYyhUCKsNuThgbFllWVtcQLTDROQCThlaHqEFXDneHlHwQnJpbmcgRnVlbCBJdGVtcw=='),
+    Locked = false,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        if not player.Character or not player.Character:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rsIQRhZUFtByFJsbDlQGioVOvWKqJcYemkMIKmnlhBJRBNDfeHcRgQkSHVtYW5vaWRSb290UGFydA==')) then return end
+        local hrp = player.Character.HumanoidRootPart
+        local targetPos = hrp.Position + Vector3.new(2, 0, 0)
+        local broughtItems = 0
+        for _, itemName in ipairs(selectedFuelItems) do
+            for _, item in ipairs(workspace:GetDescendants()) do
+                if item.Name == itemName and (item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('WMLuerFxXXAeRxsthshPxhOjjArKCJbXgrBusIJAwiRUkLQCCgUGcQLQmFzZVBhcnQ=')) or item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('FmmLnqgeAOYKggHAKtQbowHttlUyLmWuYGGciBYRghTklfnzEkbkQzJTW9kZWw='))) then
+                    moveItemToPos(item, targetPos)
+                    broughtItems = broughtItems + 1
+                end
+            end
+        end
+    end
+})
+
+Tabs.br:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('iYNYaKrlOrKOVKyVewcgyjWmNLxssgLCpUkwzudYYIaIWbTyjSeuCKORm9vZA=='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('JiSLkaUvZhQYJSbwqvHOtaAKZKfiBimZKOoBbnsTzjaQnazTSVLiebUdXRlbnNpbHM=') })
+
+local foodItems = {AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('BCntLpFgXWLVUnNdZhFAuPpNeygEJaUbwQNEwyChUIUoqWpcZTIZYZfQ2FrZQ=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('NPGulWhiEBsYnTyknGGFuBWTcNSiJiZnrtwSbnAaaLCPZwaxDHbqOMGQ29va2VkIFN0ZWFr'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('wqUlldhRFyuHfhtPoHohdUKdqnRNXIEWtBwHUgeRwWXIjyGIQQzWWjoQ29va2VkIE1vcnNlbA=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hMPArUGpAtjlYIkzLObjyVRDukcjGaPdJAdjxJDsCiHaDhFpebAsIrqU3RlYWs='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ShObiXGVSyLihLurFdSYeeHqMvwNiyOwVBXuGCKUuiQEcyYWpViERVsTW9yc2Vs'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('YcRQkDGqoYRMAHTrvoCNAmOPiOUilGBhCkDdvUdYiyAdEVAgoRgdXJQQmVycnk='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('MvieBmmhUzHzjUjRiVdDGVgyrJueEKmGLqzmCVzQacGoVCMvvoNWBgeQ2Fycm90')}
+local selectedFoodItems = {}
+
+Tabs.br:Dropdown({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('VdwIYUwPQESYEefoAzrItQqGEvDwRyKaWsMSNXATTqfDhpGITPADWkUU2VsZWN0IEZvb2QgSXRlbXM='),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('UgAnqhYuWkJoQuCoUskvxOiRYEDArbVZNyjFzadiBBzRziRDpbYbxxnQ2hvb3NlIGl0ZW1zIHRvIGJyaW5n'),
+    Values = foodItems,
+    Multi = true,
+    AllowNone = true,
+    Callback = function(options)
+        selectedFoodItems = options
+    end
+})
+
+Tabs.br:Button({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('RXOzSnVwpIjwCcYoSIFtaQvUaxhMHdoBeSslMYcPlvcaMbpWFVCXRyXQnJpbmcgRm9vZCBJdGVtcw=='),
+    Locked = false,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        if not player.Character or not player.Character:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('KpQIKweAKTjGilSRnWShgaxeAWPmOwBSvdpXwdDJzFLfuBgrCVAePRKSHVtYW5vaWRSb290UGFydA==')) then return end
+        local hrp = player.Character.HumanoidRootPart
+        local targetPos = hrp.Position + Vector3.new(2, 0, 0)
+        for _, itemName in ipairs(selectedFoodItems) do
+            for _, item in ipairs(workspace:GetDescendants()) do
+                if item.Name == itemName and (item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('TagwPuwPdngLvjomOrZEHjSrqlDYbyiIRxNbXyVtCvBnumbVNVaVOtyQmFzZVBhcnQ=')) or item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('YegsVPSsxhDkOOlyxzGnJokmvAqERKfMQURoGdkKhDuCdBTPimdHZPhTW9kZWw='))) and (item.PrimaryPart or item:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('MzZvvicmURlmbbEmGCSltJsnOKFDWnicysgDAJkPyIUETTzRrKUSEyQQmFzZVBhcnQ='))) then
+                    moveItemToPos(item, targetPos)
+                end
+            end
+        end
+    end
+})
+
+Tabs.br:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('EOnpJOtWjdwWEcfTouKcpEHWojhKMExcWHIwYCsODonnrGLDLfvlxdgTWVkaWNpbmU='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('CTdwzerwzihOQQQIPojFLUajMtNXZhVmYOAMXsMflnjXEdGrYmeKAEsYmFuZGFnZQ==') })
+
+Tabs.br:Dropdown({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('miqrjUXAjgrDmebNeoPQQWEGZWEJnOGNhYXHLvXYAXLANbHroYuNmgvU2VsZWN0IE1lZGljYWwgSXRlbXM='),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('MUwFktjdORffJoDcYQfwqzxbSzBeAAanVOCniCQDeBTiiBWOUkHrqYEQ2hvb3NlIGl0ZW1zIHRvIGJyaW5n'),
+    Values = medicalItems,
+    Multi = true,
+    AllowNone = true,
+    Callback = function(options)
+        selectedMedicalItems = options
+    end
+})
+
+Tabs.br:Button({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('GQtrTlMtZDDcSSIyYaCifVEbGBGCFBnINQUxtruxzTgGiBiVNmYausRQnJpbmcgTWVkaWNhbCBJdGVtcw=='),
+    Locked = false,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        if not player.Character or not player.Character:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('UScOTEDWbcHhelFRFSFYndnkamkkuHaBDlgKalrnHAvExBFxxPfXmarSHVtYW5vaWRSb290UGFydA==')) then return end
+        local hrp = player.Character.HumanoidRootPart
+        local targetPos = hrp.Position + Vector3.new(2, 0, 0)
+        for _, itemName in ipairs(selectedMedicalItems) do
+            for _, item in ipairs(workspace:GetDescendants()) do
+                if item.Name == itemName and (item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('mmUdPMVBbPWGrkXicNdiOlBkMGcwjHEFbJZzxZXVtStmZpPUNQVCBjsQmFzZVBhcnQ=')) or item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hEdSQpyUVvHKDqToAfdmxnlDZApcGopvZoTSedxUznXWmmzSVDGmWJnTW9kZWw='))) and (item.PrimaryPart or item:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('BSLKnFzCARkpIPwWEigJwfUflbDlETGrBZLgnFkGNBIfYUkxwYxBCrMQmFzZVBhcnQ='))) then
+                    moveItemToPos(item, targetPos)
+                end
+            end
+        end
+    end
+})
+
+Tabs.br:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('CjEVuDZoCDMlIuVDVFEheWOarILkMUnIBlEAjdGUVgHDvqqMeUbAIFMRXF1aXBtZW50'), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('jlOshtqcperiAurYRxTFxEIQQlFmzOmuRwASRqiZIsAKAxdiZvNvsaOc3dvcmQ=') })
+
+local equipmentItems = {AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('qiBlugcTgiLqmWdoucJKKKzGYqSUwfVuQMPXMksKqVxqbBJWjlUIKpkUmV2b2x2ZXI='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hqHcSEJKMkgLuKrPVnrpSGwDurKUSLIwReyqoBONAFoDbidvwHGtACYUmlmbGU='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('uwCSoPqrZxJcSeXiEHPzzJOKHUAENwfkCGDMVfuNQHjaWXpTXZRxFVvTGVhdGhlciBCb2R5'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('TkFEAJeiADldsdQBOlVdQMmZZoxexkyduzMVlwmielmGUapQtojBrQMSXJvbiBCb2R5'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ctPcbTtyssZsEXEADPRtdjWkIhIOAcbsbUvhSQrMdKOHfbJlWcLTBmOUmV2b2x2ZXIgQW1tbw=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rgUCLISqrTsNMCaBGmZeQKQhPSjdSOwsPuZCRCxnwPolNuEiMwTvJqeUmlmbGUgQW1tbw=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('aSiRGfdKOOCPRVQpTWxhSuFDDFBUWkbAPLlgDlvgwvnDFGNXRuYESdjR2lhbnQgU2Fjaw=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('xtZqxbDdiZEqGpGmjshGDoyZFriIvoVrMclfSkwavYGvtOSFKDwugWMR29vZCBTYWNr'), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('TRWlGrAMJddnoqBCOhFzoDwjzvpaciHXkXyHzDnQCtFOoRcsrsgozhvU3Ryb25nIEF4ZQ=='), AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('QKEmGadoopdaCXGcnqKEtuekbDvKLfFCRmyrbdlCkAVQTDjmpnrWTThR29vZCBBeGU=')}
+local selectedEquipmentItems = {}
+
+Tabs.br:Dropdown({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('EcKEvLSboencbTIBQfwqnRceZJbJAcgwARHVuevfROBklKAVzAIniRpU2VsZWN0IEVxdWlwbWVudCBJdGVtcw=='),
+    Desc = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('CQuATslYIWyzlWPywVsezDkkkhstOxayknOBdmtZxyjHTlwXiDvlznDQ2hvb3NlIGl0ZW1zIHRvIGJyaW5n'),
+    Values = equipmentItems,
+    Multi = true,
+    AllowNone = true,
+    Callback = function(options)
+        selectedEquipmentItems = options
+    end
+})
+
+Tabs.br:Button({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rnhKaYNsVXdSiOcZQsOCjipjQIeykUeenRKyJSjOpsszqiPITODFSWMQnJpbmcgRXF1aXBtZW50IEl0ZW1z'),
+    Locked = false,
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        if not player.Character or not player.Character:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('IJMZsOtKcxeQMXJkqsNVUYeIMCRWmDsnvukYpkQhoaIxRiElIcLyXDnSHVtYW5vaWRSb290UGFydA==')) then return end
+        local hrp = player.Character.HumanoidRootPart
+        local targetPos = hrp.Position + Vector3.new(2, 0, 0)
+        for _, itemName in ipairs(selectedEquipmentItems) do
+            for _, item in ipairs(workspace:GetDescendants()) do
+                if item.Name == itemName and (item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('VXtVwqMyuAToBaZqycVehLFLCMTEWbXcaeZkepNwrpUMnYavdbDOucmQmFzZVBhcnQ=')) or item:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('tqRqybgZGIlEwnquubyBYVapbNXbbMBFMMmTMZBhUbmrrXYWGzTWipBTW9kZWw='))) and (item.PrimaryPart or item:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('eimogRKauBhCmxAkrPpoSpoqCpwIWRcnCGjFzGzoZqttkGGhgKWXzoHQmFzZVBhcnQ='))) then
+                    moveItemToPos(item, targetPos)
+                end
+            end
+        end
+    end
+})
+
+Tabs.Fly:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('QGhMEtSwKkMskAggMamTXnFYJXdXQxktZtlqKTXBOmtxiZmTRvAzaWOTWFpbg=='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('JUKZbHKfHTQKHKHdiGGdtPlBaNSHxMEUYOLmyRdoUCjJrvrpMSBuflaZXll') })
+
+Tabs.Fly:Slider({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('FLDDvqusCAneQWnSzsrViTIcqYXmKoqPLQCRhMOsPdekZLKaVPqRjXeRmx5IFNwZWVk'),
+    Value = { Min = 1, Max = 20, Default = 1 },
+    Callback = function(value)
+        flySpeed = value
+        if FLYING then
+            task.spawn(function()
+                while FLYING do
+                    task.wait(0.1)
+                    if game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('yShbEUIiNnMxLcAfAzrkuTqokpyMrZsNzEotohWnvlEiqdQBJnCCFNsVXNlcklucHV0U2VydmljZQ==')).TouchEnabled then
+                        local root = Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('iGJuzoCILhSrpFpkRTrppfGbCVtSNPJHibomDyChFmNJuoOMYKJNMLASHVtYW5vaWRSb290UGFydA=='))
+                        if root and root:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('PxRmVqQDQfxQqPYOjqQNexdffYptLimLTxZoEaTCOOunxODceCfOFKFQm9keVZlbG9jaXR5')) then
+                            local bv = root:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('hNHhmSrUgYLiLaBdJkzGcRWjoMXkdNhrhHQuhREcMeSRkjMRQLhzgkgQm9keVZlbG9jaXR5'))
+                            bv.Velocity = bv.Velocity.Unit * (flySpeed * 50) -- Adjust velocity magnitude
+                        end
+                    end
+                end
+            end)
+        end
+    end
+})
+
+Tabs.Fly:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('tkHseQgmsKnYczWHOqHpIPJcGQiHvmpUcFpiTMCyiRLyymxEkompBaJRW5hYmxlIEZseQ=='),
+    Value = false,
+    Callback = function(state)
+        flyToggle = state
+        if flyToggle then
+            if game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('wajujUBWXjVwhTuoHDfpzfsPruKkYcfUVaOULOEIlwmOCIbMXfqPFtYVXNlcklucHV0U2VydmljZQ==')).TouchEnabled then
+                MobileFly()
+            else
+                sFLY()
+            end
+        else
+            NOFLY()
+            UnMobileFly()
+        end
+    end
+})
+
+local Players = game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('mLEZDYvkVPwHigizlYKuIwHDUcUijfKUBeThJLXgMgbxikJvHBqtwWOUGxheWVycw=='))
+local speed = 16
+
+local function setSpeed(val)
+    local humanoid = Players.LocalPlayer.Character and Players.LocalPlayer.Character:FindFirstChildOfClass(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('kZnQmlDWDQpHJpmJPuddYBfUyNBxrfRhfGCkfmEqhpaJSJVBdRcifKfSHVtYW5vaWQ='))
+    if humanoid then humanoid.WalkSpeed = val end
+end
+
+
+Tabs.Fly:Slider({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('RNneusmFqwwhYNZfBkGyshhfPLHxdSwkLSBVriktLDTdAqfGULAuXASU3BlZWQ='),
+    Value = { Min = 16, Max = 150, Default = 16 },
+    Callback = function(value)
+        speed = value
+    end
+})
+
+Tabs.Fly:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('wzZbNMzRRNraPlCQXLSLKemgvZhhGJRiKugcfWqrzokLflacmHoVEjGRW5hYmxlIFNwZWVk'),
+    Value = false,
+    Callback = function(state)
+        setSpeed(state and speed or 16)
+    end
+})
+
+local Players = game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('BRVEjHLcvyUcFhfZQNRBaPmaahkRVzyWAUqTnsLwiJcOLNAtvsdjApBUGxheWVycw=='))
+local RunService = game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('FIFxzDDsyEtcorUiioFpVUIvOJFLUsvfwUyHKVkwQyJfggeZXRwRTzFUnVuU2VydmljZQ=='))
+local noclipConnection
+
+Tabs.Fly:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('acWSxUilyGQvnZnBEUhvDECgYgCbsEkMAkJzYriJtqsDRNFplbHlPoETm9jbGlw'),
+    Value = false,
+    Callback = function(state)
+        if state then
+            noclipConnection = RunService.Stepped:Connect(function()
+                local char = Players.LocalPlayer.Character
+                if char then
+                    for _, part in ipairs(char:GetDescendants()) do
+                        if part:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('BiTyVKSTZGUNsbeGOgRRuWuhsxhqSTfvinhdMtTfivwMtKsXfLSeKIaQmFzZVBhcnQ=')) then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        else
+            if noclipConnection then
+                noclipConnection:Disconnect()
+                noclipConnection = nil
+            end
+        end
+    end
+})
+
+local UserInputService = game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('aWtsVdVCxFqNoRrqBacpaJYzmBfgpWstMyqJeQsDWAOsreeiRPTWdNoVXNlcklucHV0U2VydmljZQ=='))
+local Players = game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('XvEXdshGZtInyKnxHPRKdsLZNdxzwEciFCdDsNDyVDCaDIJuFuZVsOVUGxheWVycw=='))
+local infJumpConnection
+
+Tabs.Fly:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('movzlCcKfcdVmUsEHRfzvvrJfMvgGlekmBXuyDRWJBAjfdvzMCXrfzQSW5mIEp1bXA='),
+    Value = false,
+    Callback = function(state)
+        if state then
+            infJumpConnection = UserInputService.JumpRequest:Connect(function()
+                local char = Players.LocalPlayer.Character
+                local humanoid = char and char:FindFirstChildOfClass(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('FfGMrGskXGClxlIoMAqtRgkBfGuNXFRIgYzczgbHmkrWanxQLtzJuoLSHVtYW5vaWQ='))
+                if humanoid then
+                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
+            end)
+        else
+            if infJumpConnection then
+                infJumpConnection:Disconnect()
+                infJumpConnection = nil
+            end
+        end
+    end
+})
+
+function createESPText(part, text, color)
+    if part:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('JuGywzGkSSZWevkIyZRAzrwOeyBdxaKCRmBWbVTYocGjFlGVZClLymGRVNQVGV4dG8=')) then return end
+
+    local esp = Instance.new(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('NrRjIGGEHxXrCLpIXMEXmoQwdRihaQhatzDgyObPZTzZOTnXIUobxyuQmlsbGJvYXJkR3Vp'))
+    esp.Name = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('CKmztVNUfouBnZQNjXrUDuawjuEUMTFRBgLtRHOBRrVMRibkrpJfTJLRVNQVGV4dG8=')
+    esp.Adornee = part
+    esp.Size = UDim2.new(0, 100, 0, 20)
+    esp.StudsOffset = Vector3.new(0, 2.5, 0)
+    esp.AlwaysOnTop = true
+    esp.MaxDistance = 300
+
+    local label = Instance.new(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('VQIXXVUvFatCDmzkxVNwxlFeJNNaqaQhZwHfjxKSgSJZTawEEFfszOsVGV4dExhYmVs'))
+    label.Parent = esp
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = color or Color3.fromRGB(255,255,0)
+    label.TextStrokeTransparency = 0.2
+    label.TextScaled = true
+    label.Font = Enum.Font.GothamBold
+
+    esp.Parent = part
+end
+
+local function Aesp(nome, tipo)
+    local container
+    local color
+    if tipo == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('UxfTHvDFjRtBMKCednzezuZrQFUegpcCQNxRAFmibddugyRWPXIZdeLaXRlbQ==') then
+        container = workspace:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('pTRrgeWDtDtqkoVrgSipuecbBWorJSFeyniZrkuLSNoGChLSUkQzOvOSXRlbXM='))
+        color = Color3.fromRGB(0, 255, 0)
+    elseif tipo == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('VFzkPSIXEjwdlnMYfuZBsDQKPuzVCGEJFGybXiMYeJQsaIZiQxSwWqjbW9i') then
+        container = workspace:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ReTrUDhgmAnPfALGSqkyAmkbmvwVhLxgkyKEGfTYqLtpzMyvlMkxKHHQ2hhcmFjdGVycw=='))
+        color = Color3.fromRGB(255, 255, 0)
+    else
+        return
+    end
+    if not container then return end
+
+    for _, obj in ipairs(container:GetChildren()) do
+        if obj.Name == nome then
+            local part = obj:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('wsqleKwExjJXfaNZQdtZAXEfBEINFsaOhAIsjIZPaNCeuLIbzAxbUyXQmFzZVBhcnQ=')) and obj or obj:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('YrkTlQMPiWKRFZgRedjYZWCbJrRdnDPMzilOTUzPOpXjYNPxwUNaYyHQmFzZVBhcnQ='))
+            if part then
+                createESPText(part, obj.Name, color)
+            end
+        end
+    end
+end
+
+local function Desp(nome, tipo)
+    local container
+    if tipo == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('bPumqnfQDnqRilLPatrnMPlsFzQAjVOOWUVemJWaebcKsIjizqkdJwNaXRlbQ==') then
+        container = workspace:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('FpghWRIiyWvyhBjRYyGEpiRQTBhNjRMQbQagdVNaVaHQbshVYOvvFyhSXRlbXM='))
+    elseif tipo == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('FMSziLzEoioAJViYVqnZYRmmIMrCSqeZfYhhTrjxPXQxfpnfGpnJOgWbW9i') then
+        container = workspace:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('HGbVomjzDRJHbhhIVJaZLxKiJFCdTLuDcgJtmCuFxwoSdQlkvSRdZOFQ2hhcmFjdGVycw=='))
+    else
+        return
+    end
+    if not container then return end
+
+    for _, obj in ipairs(container:GetChildren()) do
+        if obj.Name == nome then
+            local part = obj:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('WdkUkDawUXLpKikJRAASnmAuwqAkoztHnouYjRgmMxOmEXaskFNyjEsQmFzZVBhcnQ=')) and obj or obj:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('VSSbZrzWoxtSLCbKGHDrGadZKQlhDMrvXOPTDwBbzHmfIoqSVXNyyzuQmFzZVBhcnQ='))
+            if part then
+                for _, gui in ipairs(part:GetChildren()) do
+                    if gui:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('tEuaPoWqyhbKGCpTNpTpRqgRfzxBwdNCnhGPcNjvTKHuRxZmLxeSXvuQmlsbGJvYXJkR3Vp')) and gui.Name == AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('XwnJkRZeOjORFBfBBcgEhBaIlpRdAygfLJaThzOpYRhQloLDCbOyydDRVNQVGV4dG8=') then
+                        gui:Destroy()
+                    end
+                end
+            end
+        end
+    end
+end
+
+local selectedItems = {}
+local selectedMobs = {}
+local espItemsEnabled = false
+local espMobsEnabled = false
+local espConnections = {}
+
+Tabs.esp:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('yQMKPMlxpNduTyRFUqagkFSeEFuNaykxzyNCBCZReNVnXfRqmezYsUQRXNwIEl0ZW1z'), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('nxUBEenfCOrYlXvKNsGQatXhBJsORMvcyNIDjqxCZOYHJOZRVHPoUAccGFja2FnZQ==') })
+
+Tabs.esp:Dropdown({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('qwPOGTJVfmqdpNjLXTgAOGMUqxSiRwicaNepFRcvqDnephgCrJtxabfRXNwIEl0ZW1z'),
+    Values = ie,
+    Value = {},
+    Multi = true,
+    AllowNone = true,
+    Callback = function(options)
+        selectedItems = options
+        if espItemsEnabled then
+            for _, name in ipairs(ie) do
+                if table.find(selectedItems, name) then
+                    Aesp(name, AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('MFcWKIVfUPlhHdwHFeVHzkOdxLAdvFSBtepSNTomhQjYhSpAqLHDmzhaXRlbQ=='))
+                else
+                    Desp(name, AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('IWtJpMUcCHrELmnEqGPDJtqsMvBxVySDVBdSszmVvkIaRKpWKIjzSGWaXRlbQ=='))
+                end
+            end
+        else
+            for _, name in ipairs(ie) do
+                Desp(name, AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('jFJUflxPXOWYutQlrdzIxEqngvPFpXOYDXLBXyAMLpnRNzFxVfGNjtiaXRlbQ=='))
+            end
+        end
+    end
+})
+
+Tabs.esp:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('ebmBJqdvHaKMRWsKAMNAlaHKihBEZJZoUrFqspVitTSizoGDZXdaPxQRW5hYmxlIEVzcA=='),
+    Value = false,
+    Callback = function(state)
+        espItemsEnabled = state
+        for _, name in ipairs(ie) do
+            if state and table.find(selectedItems, name) then
+                Aesp(name, AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('xvDjNgVzGzoCTTZIoXVpBzvkhQHdbxocfPzjIuYQsoeSLLCiWcpEgsQaXRlbQ=='))
+            else
+                Desp(name, AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('TXoSPvBRUKALGeHPmYwumUJUKgTLASYRpoOOBZwQJYoJPhcgOCvYlhoaXRlbQ=='))
+            end
+        end
+
+        if state then
+            if not espConnections[AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('tlWuaQYxdleqfSLQNfWnujHmhpyqNBXaASiXcpvRbjyDKvhotsUBDuISXRlbXM=')] then
+                local container = workspace:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('xosibfCGGZOIctHjbLKjLZuvSFgxXUjbQgbSEtxnynMBAKDIOpmhUBsSXRlbXM='))
+                if container then
+                    espConnections[AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('MxyqpuksAzpNlgcFNrcVBpOUYjPtnzjNTuyxmnlnkvtKTCyXwCpIWYsSXRlbXM=')] = container.ChildAdded:Connect(function(obj)
+                        if table.find(selectedItems, obj.Name) then
+                            local part = obj:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('MkhdCyLCvqjFaYmZtnPbvEcHHxHJCGIGUroIUkhQqeKhEUtydqLqARgQmFzZVBhcnQ=')) and obj or obj:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('yAfBHRQKNvjzOgibMArDJUxGdWFQnoNRDiVcmDkSvoSyFTdAaXwppVIQmFzZVBhcnQ='))
+                            if part then
+                                createESP(part, obj.Name, Color3.fromRGB(0, 255, 0))
+                            end
+                        end
+                    end)
+                end
+            end
+        else
+            if espConnections[AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('UjFaKvrTORCPdvvitROqWdRhbKlZAyRpfMCWOYlJKuzJGnevJYVmbIUSXRlbXM=')] then
+                espConnections[AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('nxDbVGMTxcGPbgejussVgTiYBeSrufToGIEhPbWtKLWqbkAzVRBsFiySXRlbXM=')]:Disconnect()
+                espConnections[AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('WFhckqoUSQgXegtzCXtDniAECBEmzlIYTzDCRQIeXyVixzarGmNNxYISXRlbXM=')] = nil
+            end
+        end
+    end
+})
+
+Tabs.esp:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('TzZqFLJSOoNPulEbJWnjLmlPUWpNWNfyvnDhaFYyMJBICtbQLKSnQTiRXNwIEVudGl0eQ=='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('pbBQpfhvrMhztgGzfWsIltWunlxmJEWxkkXtxotDzVjYbQdKheCMyLqdXNlcg==') })
+
+Tabs.esp:Dropdown({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('iNcypiJSKMlFOPOtfsByGnnRIAFehRUUWflElkKcOoBKkxbpdeXZTWyRXNwIEVudGl0eQ=='),
+    Values = me,
+    Value = {},
+    Multi = true,
+    AllowNone = true,
+    Callback = function(options)
+        selectedMobs = options
+        if espMobsEnabled then
+            for _, name in ipairs(me) do
+                if table.find(selectedMobs, name) then
+                    Aesp(name, AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('PDVbntCoDTUplZcyWbxUbXKEKMaipXUsEXJBkMeZnGWRpROJokQlFNhbW9i'))
+                else
+                    Desp(name, AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('fLIMwXoEbMCggcsujlOCdUPmZzmmgVemWXyHKTeRsgFDetfxcvGzpNRbW9i'))
+                end
+            end
+        else
+            for _, name in ipairs(me) do
+                Desp(name, AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('tqYrvelcqPxdlRJLpDUGWSvtAvnNGKuAtmklyzrnlkpGdReHCYDMtQZbW9i'))
+            end
+        end
+    end
+})
+
+Tabs.esp:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('QWXnjZDKDqhKsyWzCLeQuTTFgFsZvQwwykKJFxBTRyoULNLuNJmBtfkRW5hYmxlIEVzcA=='),
+    Value = false,
+    Callback = function(state)
+        espMobsEnabled = state
+        for _, name in ipairs(me) do
+            if state and table.find(selectedMobs, name) then
+                Aesp(name, AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('SVJoLppYTCOrxuMzBzhNoReAeUeYZsQqTZwoWQLhkFipPaPVvUkxhsSbW9i'))
+            else
+                Desp(name, AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('NmxxpMazGNoXbskaySrEvdSyGEllvlQcsvvhZNktMWzaPnfwYyRCZfLbW9i'))
+            end
+        end
+
+        if state then
+            if not espConnections[AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('MmEEUsmXmmgGpGzqsSKUlIpWcTrQiEQfwzwcpCHWkwUDeWMxqFxTxjaTW9icw==')] then
+                local container = workspace:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('cixiLlMfoyWurwVuHALYEntxXzknlWETmGQgLkZnYBDLIrvbsPbqkJNQ2hhcmFjdGVycw=='))
+                if container then
+                    espConnections[AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('lwcxtBFTNPuqVuPDnjjkrizpuNRxZUzKOaIjmBTHpKwRwuJmklrEtblTW9icw==')] = container.ChildAdded:Connect(function(obj)
+                        if table.find(selectedMobs, obj.Name) then
+                            local part = obj:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('JXExbNeAwopYklIjOxLdhHsruRwlrHDbyFTclrJUSEAvxtRoCfgZeBWQmFzZVBhcnQ=')) and obj or obj:FindFirstChildWhichIsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('UgVdkHfvhdXYZJZtflbuagsOXsMxSihnpUsrpfBoSFlZVRCNgxpNWAtQmFzZVBhcnQ='))
+                            if part then
+                                createESP(part, obj.Name, Color3.fromRGB(255, 255, 0))
+                            end
+                        end
+                    end)
+                end
+            end
+        else
+            if espConnections[AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('gYfDMSIHhKXBrZuZqKNsnCtwUvPHNftBfbvhteNbnqfXrnDstDwHaCMTW9icw==')] then
+                espConnections[AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('YnKavOqgZVBfaRGAnHcgBQgcwtNXfFyKqjwXzQvyahNjUQsFcopkplHTW9icw==')]:Disconnect()
+                espConnections[AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('sToKDquUWfJuiGIxpYXaOPKRJhGKOjPMzgoVgNaUGCmMQpoBoVqEhePTW9icw==')] = nil
+            end
+        end
+    end
+})
+
+Tabs.Main:Section({ Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('rNsjHptmPKmlxqJxYBcpOQRKgBMOTrWNBnXuuuRBJJPCGQyGUpeJxexTWlzYw=='), Icon = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('qRxnntaghMwmVlQufuLhuobdTdOclBdzUJNwtWHrBsBLyhYrQjBBsxjc2V0dGluZ3M=') })
+
+local instantInteractEnabled = false
+local instantInteractConnection
+local originalHoldDurations = {}
+
+Tabs.Main:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('RSbSQIrDcnngSUVHQaqGUJfRjktkfzevkMxljdXCxfELNZtLVBgBlRSSW5zdGFudCBJbnRlcmFjdA=='),
+    Value = false,
+    Callback = function(state)
+        instantInteractEnabled = state
+
+        if state then
+            originalHoldDurations = {}
+            instantInteractConnection = task.spawn(function()
+                while instantInteractEnabled do
+                    for _, obj in ipairs(workspace:GetDescendants()) do
+                        if obj:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('oLzSKcflinrAOazxcqPWEiYgBZmLMFfuqFtxvIziofSwKrKXCExzCYZUHJveGltaXR5UHJvbXB0')) then
+                            if originalHoldDurations[obj] == nil then
+                                originalHoldDurations[obj] = obj.HoldDuration
+                            end
+                            obj.HoldDuration = 0
+                        end
+                    end
+                    task.wait(0.5)
+                end
+            end)
+        else
+            if instantInteractConnection then
+                instantInteractEnabled = false
+            end
+            for obj, value in pairs(originalHoldDurations) do
+                if obj and obj:IsA(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('dFrreMylKuWEqIzZNsfYetMwZYgmyiCYtEFnINxhFhBGOKfqpFXuafUUHJveGltaXR5UHJvbXB0')) then
+                    obj.HoldDuration = value
+                end
+            end
+            originalHoldDurations = {}
+        end
+    end
+})
+
+local RunService = game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('eGJdJEXmkoCmptRhYnfTdfKbrBmvSqYIPGWGKKjyHhjMfwafoKzSEkaUnVuU2VydmljZQ=='))
+local ReplicatedStorage = game:GetService(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('NuMIKnWjasploWKHBTQaYnUIcqkCatAhwXcIukEEHlDPAldafktMAANUmVwbGljYXRlZFN0b3JhZ2U='))
+local torchLoop = nil
+
+Tabs.Main:Toggle({
+    Title = AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('BoeQlcVdlGZoBdxKlRAyauylQZJXFufirFAGEzUorukKHGweEfECDIpQXV0byBTdHVuIERlZXI='),
+    Value = false,
+    Callback = function(state)
+        if state then
+            torchLoop = RunService.RenderStepped:Connect(function()
+                pcall(function()
+                    local remote = ReplicatedStorage:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('sfGDqTHapwAeYALCZvBAWFrITdmeYnDKJeVYvCXTHZXhrQvucSBRIkbUmVtb3RlRXZlbnRz'))
+                        and ReplicatedStorage.RemoteEvents:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('gTFkPEepzRmlAUicTviNJlYEmIEUgrPjuFrRwGPxlkdjySGXbPEVqcMRGVlckhpdEJ5VG9yY2g='))
+                    local deer = workspace:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('cfhJkNXFdmFUGGqEjUJOTLqqeRUsNWbvPAlziyVcpXAhHfIinMILXnFQ2hhcmFjdGVycw=='))
+                        and workspace.Characters:FindFirstChild(AUINVgOOaGfXyqwMToJqqEKscUBxCmCyMGOePNvLgnGOGCnAugjebdoEUMXMXIjzEHOetrITAnkiFAjBevmPrFAbdAdEZQIkHEXn('biKhRaNQBHjFHtwjtkSthvLUHEKJaSNSVBmtQFynmNyeUBZsxzgxIcXRGVlcg=='))
+                    if remote and deer then
+                        remote:InvokeServer(deer)
+                    end
+                end)
+                task.wait(0.1)
+            end)
+        else
+            if torchLoop then
+                torchLoop:Disconnect()
+                torchLoop = nil
+            end
+        end
+    end
+})    
